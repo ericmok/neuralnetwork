@@ -1,5 +1,6 @@
 /*global module, require*/
 
 module.exports = {
-    'Layer': require('./layers').Layer
+    'Layers': require('./layers'),
+    'Neurons': require('./neurons')
 };

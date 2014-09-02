@@ -13,7 +13,8 @@ describe('Test', function() {
         done();
     });
     it('can load network', function(done) {
-        expect( network.Layer ).to.not.be.null;
+        expect(network.Layers).to.not.be.undefined;
+        expect(network.Neurons).to.not.be.undefined;
         done();
     });
 });
@@ -23,6 +24,12 @@ describe('Layer', function() {
         it('should accept not accept odd number arguments more than 1', function(done) {
             expect( function() { 
                         return new network.Layer({}, 1, {}) 
+                    } ).to.throw(Error);
+            expect( function() { 
+                        return new network.Layer() 
+                    } ).to.throw(Error);
+            expect( function() { 
+                        return new network.Layer({}, 1, {}, 2, {}) 
                     } ).to.throw(Error);
             done();
         });
