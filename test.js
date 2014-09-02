@@ -56,6 +56,10 @@ describe('Layer', function() {
         it('can initialize neuron list', function(done) {
             var test = new network.Layers.Layer(network.Neurons.IdentityNeuron, 10);
             expect(test.neurons.length).to.be.equal(10);    
+            
+            var test = new network.Layers.Layer(network.Neurons.IdentityNeuron, 10, network.Neurons.BiasNeuron, 1);
+            expect(test.neurons.length).to.be.equal(11);    
+            
             done();
         });
         
@@ -67,6 +71,35 @@ describe('Layer', function() {
             
             expect(test.neurons.length).to.be.equal(10);
             expect(test.neurons[0].forward()).to.be.equal(12);
+            expect(test.neurons[0].backward()).to.be.equal(12);
+            
+            var test = new network.Layers.Layer({
+                forward: function(abc) { return 12; },
+                backward: function(out) { return 12; }
+            }, 10, network.Neurons.BiasNeuron, 22);
+            
+            expect(test.neurons.length).to.be.equal(32);
+            expect(test.neurons[0].forward()).to.be.equal(12);
+            
+            done();
+        });
+        
+        it('each neuron has a different name', function(done) {
+            
+            var lookup = {};
+            
+            var test = new network.Layers.Layer({
+                forward: function(abc) { return 12; },
+                backward: function(out) { return 12; }
+            }, 5, network.Neurons.BiasNeuron, 2);
+            
+            console.log(test);
+            
+            // Cute uniqueness test! :D
+            test.neurons.forEach(function(n) {
+                expect(lookup[n.name]).to.be.undefined;
+                lookup[n.name] = 1;
+            });
             
             done();
         });

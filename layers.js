@@ -12,7 +12,8 @@ function ifObjectThenCreateDefaultNeuron(obj) {
         indirection;
     
     if (typeof obj === 'function') {
-        return new obj();
+        var ret = new obj();
+        return ret;
     }
     
     indirection = new neurons.Neuron();
@@ -35,8 +36,6 @@ function Layer() {
     var i,
         args = Array.prototype.slice.call(arguments, 0);
     
-    
-    
     // Sensible args should be multiples of 2, yet a single arg might pass 
     if ((args.length === 0) ||
             (args.length % 2 !== 0 && args.length > 1)) {
@@ -46,7 +45,9 @@ function Layer() {
 
     this.neurons = [];
     
-    this.createMixNeurons(args);
+    if (args.length > 1) {
+        this.createMixNeurons(args);
+    }
 }
 
 Layer.prototype.createMixNeurons = function (args) {
@@ -54,17 +55,14 @@ Layer.prototype.createMixNeurons = function (args) {
 
     var i, j,
         neuronType = null;
-    
-    if (args.length > 1) {
         
-        for (i = 0; i < args.length / 2; i += 1) {
+    for (i = 0; i < args.length / 2; i += 1) {
+    
+        for (j = 0; j < args[i * 2 + 1]; j += 1) {
             neuronType = ifObjectThenCreateDefaultNeuron(args[i * 2]);
-            
-            for (j = 0; j < args[i * 2 + 1]; j += 1) {
-                this.neurons.push(neuronType);
-            }
+            this.neurons.push(neuronType);
         }
-    }
+    }   
 };
 
 module.exports = {
