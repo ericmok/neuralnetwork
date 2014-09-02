@@ -1,0 +1,26 @@
+{
+  "name": "neuralnetwork0",
+  "version": "0.0.0",
+  "description": "Rudimentary Neural Network",
+  "main": "network.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/EricMok/neuralnetwork0.git"
+  },
+  "author": "Eric M",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/EricMok/neuralnetwork0/issues"
+  },
+  "keywords": [
+      "Neural Network", "Backprop"
+  ],
+  "scripts": {
+      "test": "./node_modules/.bin/mocha .",
+      "start": "node ./network.js"
+  },
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "mocha": "^1.21.4"
+  }
+}
