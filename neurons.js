@@ -4,10 +4,12 @@
 (function () {
 
     'use strict';
-
+    
+    var key; // Temp variable for copying keys in a loop
+    
     /**
-    Neural models for layers.
-    Should contain both forward and backward interfaces
+    * Neural models for layers.
+    * Should contain a name and both forward and backward interfaces
     */
     function Neuron() {
         this.name = Math.random().toString(36).substring(2);
@@ -25,24 +27,31 @@
     function IdentityNeuron() {
         Neuron.prototype.constructor.apply(this, arguments);
     }
+    
+    for (key in Neuron.prototype) {
+        if (Neuron.prototype.hasOwnProperty(key)) {
+            IdentityNeuron.prototype[key] = Neuron.prototype[key];
+        }
+    }
 
-
+    
     function BiasNeuron() {
         Neuron.prototype.constructor.apply(this, arguments);
     }
     
-    BiasNeuron.prototype.forward = function (input) {
+    BiasNeuron.prototype.forward = function () {
         return 1;
     };
     
-    BiasNeuron.prototype.backward = function (error) {
+    BiasNeuron.prototype.backward = function () {
         return 1;
     };
     
     
     module.exports = {
         'Neuron': Neuron,
-        'IdentityNeuron': IdentityNeuron
+        'IdentityNeuron': IdentityNeuron,
+        'BiasNeuron': BiasNeuron
     };
 }());
 
