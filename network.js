@@ -2,5 +2,6 @@
 
 module.exports = {
     'Layers': require('./layers'),
-    'Neurons': require('./neurons')
+    'Neurons': require('./neurons'),
+    'Connections': require('./connections')
 };

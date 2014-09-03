@@ -25,21 +25,21 @@ describe('Layer', function() {
     describe('Arguments', function() {
         it('should accept not accept odd number arguments more than 1', function(done) {
             expect( function() { 
-                        return new network.Layers.Layer({}, 1, {}) 
+                        return new network.Layers.Layer({}, 1, {});
                     } ).to.throw(Error);
             expect( function() { 
-                        return new network.Layers.Layer() 
+                        return new network.Layers.Layer();
                     } ).to.throw(Error);
             expect( function() { 
-                        return new network.Layers.Layer({}, 1, {}, 2, {}) 
+                        return new network.Layers.Layer({}, 1, {}, 2, {});
                     } ).to.throw(Error);
             done();
         });
         
         it('should accept even arguments at least', function(done) {
             expect( function() { 
-                        return new network.Layers.Layer({}, 1, {}, 2) 
-                    } ).to.not.throw(Error);
+                        return new network.Layers.Layer({}, 1, {}, 2);
+            } ).to.not.throw(Error);
             done();
         });
         
@@ -55,10 +55,10 @@ describe('Layer', function() {
         
         it('can initialize neuron list', function(done) {
             var test = new network.Layers.Layer(network.Neurons.IdentityNeuron, 10);
-            expect(test.neurons.length).to.be.equal(10);    
+            expect(test.neurons.length).to.be.equal(10);   
             
-            var test = new network.Layers.Layer(network.Neurons.IdentityNeuron, 10, network.Neurons.BiasNeuron, 1);
-            expect(test.neurons.length).to.be.equal(11);    
+            test = new network.Layers.Layer(network.Neurons.IdentityNeuron, 10, network.Neurons.BiasNeuron, 1);
+            expect(test.neurons.length).to.be.equal(11);
             
             done();
         });
@@ -116,4 +116,87 @@ describe('Neurons', function() {
         });
     });
 
+});
+
+describe('Connections', function() {
+    describe('Help Functions', function() {
+        it('can dot product', function(done) {
+            expect(network.Connections.dotProduct([1, 1, 1], [1, 1, 1])).to.equal(3);
+            
+            // Floating point error
+            expect(network.Connections.dotProduct([-1, 2.3, 3], [1.1, 0.1, 0])).to.equal(-0.8700000000000001);
+            done();
+        });
+        
+        it('can matrix vec multiply', function(done) {
+            var result = network.Connections.matrixVectorMultiplication([0,0,0,0],[0,0]);
+            expect(result[0]).to.be.equal(0);
+            expect(result[1]).to.be.equal(0);
+            expect(result.length).to.be.equal(2);
+            
+            result = network.Connections.matrixVectorMultiplication([1,2,3,4,5,6],[5.5, 4.5]);
+            expect(result[0]).to.be.equal(1 * 5.5 + 2 * 4.5);
+            expect(result[1]).to.be.equal(3 * 5.5 + 4 * 4.5);
+            expect(result[2]).to.be.equal(5 * 5.5 + 6 * 4.5);
+            expect(result.length).to.be.equal(3);
+            
+            result = network.Connections.matrixVectorMultiplication([1,2,3,4,5,6],[5.5, 4.5, 2.1]);
+            expect(result[0]).to.be.equal(1 * 5.5 + 2 * 4.5  + 3 * 2.1);
+            expect(result[1]).to.be.equal(4 * 5.5 + 5 * 4.5 + 6 * 2.1);
+            expect(result.length).to.be.equal(2);
+            
+            done();
+        });
+        
+        it('cannot matrix vec multiply with bad params', function(done) {
+            expect(function() {
+                return network.Connections.matrixVectorMultiplication([1,2,3],[5.5, 4.5]);
+            }).to.throw(Error);
+            
+            expect(function() {
+                return network.Connections.matrixVectorMultiplication([1,2,3, 4, 5],[5.5, 4.5]);
+            }).to.throw(Error);
+            
+            done();
+        });
+        
+        it('can transpose', function(done) {
+            var result = network.Connections.transpose([1, 2, 3, 4], 2);
+            expect(result[0]).to.be.equal(1);
+            expect(result[1]).to.be.equal(3);
+            expect(result[2]).to.be.equal(2);
+            expect(result[3]).to.be.equal(4);
+            expect(result.length).to.be.equal(4);
+            
+            result = network.Connections.transpose([1, 2, 3, 4, 5, 6], 2);
+            expect(result[0]).to.be.equal(1);
+            expect(result[1]).to.be.equal(3);
+            expect(result[2]).to.be.equal(5);
+            expect(result[3]).to.be.equal(2);
+            expect(result[4]).to.be.equal(4);
+            expect(result[5]).to.be.equal(6);
+            expect(result.length).to.be.equal(6);
+            
+            done();
+        });
+        
+        it('can dotproduct transposed matrices', function(done) {
+            var mat = [1,2,3,4];
+            var result = network.Connections.matrixVectorMultiplication(mat, [1,1]);
+            expect(result[0]).to.be.equal(3);
+            expect(result[1]).to.be.equal(7);
+            
+            expect(result.length).to.be.equal(2);
+            
+            // This time transpose the matrix
+            result = network.Connections.matrixVectorMultiplication(network.Connections.transpose(mat, 2), [1,1]);
+            expect(result[0]).to.be.equal(4);
+            expect(result[1]).to.be.equal(6);
+            
+            expect(result.length).to.be.equal(2);
+            
+            
+            done();
+        });
+    });
 });

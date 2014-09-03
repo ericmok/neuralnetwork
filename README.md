@@ -26,6 +26,7 @@ var outputLayer = new Layer(SigmoidNeuron, 1);
 var ihConnection = inputLayer.connect(FullConnection, hiddenLayer);
 var hoConnection = hiddenLayer.connect(FullConnection, outputLayer);
 
+
 // Not sure about this
 // var recurrentConnection = hiddenLayer.connect(FullConnection, outputLayer);
 
