@@ -93,8 +93,6 @@ describe('Layer', function() {
                 backward: function(out) { return 12; }
             }, 5, network.Neurons.BiasNeuron, 2);
             
-            console.log(test);
-            
             // Cute uniqueness test! :D
             test.neurons.forEach(function(n) {
                 expect(lookup[n.name]).to.be.undefined;
