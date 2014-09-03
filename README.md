@@ -7,7 +7,7 @@ A little less fancy for the imagination as the network is rigidly organized into
 and transfer signals instantaneously.
 
 
-![Architecture](https://github.com/EricMok/neuralnetwork0/blob/master/architecture.svg)
+![Architecture](https://github.com/EricMok/neuralnetwork0/blob/master/architecture.png)
 
 
 ##Todo:
