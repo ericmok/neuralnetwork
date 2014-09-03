@@ -51,8 +51,12 @@ function transpose(matrix, numberColumns) {
 */
 function FullConnection(inputLayer, outputLayer) {
     'use strict';
+    var i;
     
     this.parameters = [];
+    for (i = 0; i < inputLayer.length * outputLayer.length; i += 1) {
+        this.parameters[i] = (Math.random() > 0.5 ? 1 : -1) * 2 * Math.random();
+    }
     this.inputLayer = inputLayer;
     this.outputLayer = outputLayer;
 }
