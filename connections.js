@@ -33,7 +33,7 @@ function matrixVectorMultiplication(matrix, vec) {
 function transpose(matrix, numberColumns) {
     'use strict';
     
-    var i, j, 
+    var i, j,
         numberRows = matrix.length / numberColumns,
         ret = [];
     
@@ -54,23 +54,35 @@ function FullConnection(inputLayer, outputLayer) {
     var i;
     
     this.parameters = [];
-    for (i = 0; i < inputLayer.length * outputLayer.length; i += 1) {
+    
+    for (i = 0; i < inputLayer.neurons.length * outputLayer.neurons.length; i += 1) {
         this.parameters[i] = (Math.random() > 0.5 ? 1 : -1) * 2 * Math.random();
     }
+    
     this.inputLayer = inputLayer;
     this.outputLayer = outputLayer;
 }
 
+FullConnection.prototype.zeroParameters = function () {
+    'use strict';
+    
+    this.parameters = this.parameters.map(function (el) {
+        return 0;
+    });
+};
+
 FullConnection.prototype.forward = function () {
     'use strict';
     
-    this.outputLayer.inputBuffer = dotProduct(this.inputLayer.outputBuffer, this.parameters);
+    this.outputLayer.inputBuffer = matrixVectorMultiplication(this.parameters, this.inputLayer.outputBuffer);
 };
 
 FullConnection.prototype.backward = function () {
     'use strict';
     
-    this.inputLayer.outputError = dotProduct(this.outputLayer.inputError, transpose(this.params));
+    var scaledError = transpose(this.parameters, this.inputLayer.outputError.length);
+
+    this.inputLayer.outputError = matrixVectorMultiplication(scaledError, this.outputLayer.inputError);
 };
 
 

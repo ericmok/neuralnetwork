@@ -6,7 +6,10 @@ var chai = require('chai'),
     should = chai.should(),
     expect = chai.expect;
 
-var network = require('./network');
+var network = require('./network'),
+    Neurons = network.Neurons,
+    Connections = network.Connections,
+    Layers = network.Layers;
 
 describe('Test', function() {
     it('works', function(done) {
@@ -21,7 +24,7 @@ describe('Test', function() {
     });
 });
 
-describe('Layer', function() {
+describe('Layers', function() {
     describe('Arguments', function() {
         it('should accept not accept odd number arguments more than 1', function(done) {
             expect( function() { 
@@ -101,8 +104,40 @@ describe('Layer', function() {
             
             done();
         });
+        
+        it('can initialize inputbuffer outputbuffer inputerror outputerror', function(done) {
+            var test = new network.Layers.Layer(network.Neurons.SigmoidNeuron, 10);
+            expect(test.inputBuffer.length).to.be.equal(test.neurons.length);
+            expect(test.outputBuffer.length).to.be.equal(test.neurons.length);
+            expect(test.inputError.length).to.be.equal(test.neurons.length);
+            expect(test.outputError.length).to.be.equal(test.neurons.length);
+            
+            done();
+        });
     });
     
+    describe('Propogation', function() {
+        
+        it('can forward', function(done) {
+            var test = new network.Layers.Layer(network.Neurons.IdentityNeuron, 2);
+            test.inputBuffer = [1, 1.1];
+            test.forward();
+            expect(test.outputBuffer[0]).to.be.equal( network.Neurons.IdentityNeuron.prototype.forward(test.inputBuffer[0]) );
+            expect(test.outputBuffer[1]).to.be.equal( network.Neurons.IdentityNeuron.prototype.forward(test.inputBuffer[1]) );
+            
+            done();
+        });
+        
+        it('can backward', function(done) {
+            var test = new network.Layers.Layer(network.Neurons.IdentityNeuron, 2);
+            test.outputError = [1, 1];
+            test.backward();
+            expect(test.inputError[0]).to.be.equal( network.Neurons.IdentityNeuron.prototype.backward(test.outputError[0]) );
+            expect(test.inputError[1]).to.be.equal( network.Neurons.IdentityNeuron.prototype.backward(test.outputError[1]) );
+            
+            done();
+        });
+    });
 });
 
 describe('Neurons', function() {
@@ -196,6 +231,82 @@ describe('Connections', function() {
             expect(result.length).to.be.equal(2);
             
             
+            done();
+        });
+    });
+    
+    describe('Constructor', function() {
+        var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2, Neurons.BiasNeuron, 1);
+        var outputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+        
+        it('has right # params', function(done) {
+            var connection = new Connections.FullConnection(inputLayer, outputLayer);
+        
+            expect(connection.parameters.length).to.be.equal(inputLayer.neurons.length * outputLayer.neurons.length);
+                
+            done();
+        });
+    });
+    
+    describe('Connection State', function() {
+        var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+        var outputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+            
+        it('can zero parameters', function(done) {
+            var con = new Connections.FullConnection(inputLayer, outputLayer);
+            con.zeroParameters();
+
+            expect(con.parameters[0]).to.be.equal(0);
+            expect(con.parameters[1]).to.be.equal(0);
+                   
+            done();
+        });
+    });
+    
+    describe('Propogation', function() {
+        var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2, Neurons.BiasNeuron, 1);
+        var outputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+        var connection = new Connections.FullConnection(inputLayer, outputLayer);
+        connection.parameters = [1.1, 1, 1, 0, 0, 0];    
+        
+        it('can forward', function(done) {
+    
+            inputLayer.inputBuffer = [1, 2, 3];
+            inputLayer.forward();
+            connection.forward();
+            outputLayer.forward();
+
+            expect(outputLayer.inputBuffer.length).to.be.equal(2);
+            
+            // Mind the bias unit - it creates a 1 instead of a 3
+            expect(outputLayer.inputBuffer[0]).to.be.equal(1.1*1 + 2 + 1);
+            expect(outputLayer.inputBuffer[1]).to.be.equal(0);
+            
+            expect(outputLayer.outputBuffer[0]).to.be.equal(1.1*1 + 2 + 1);
+            expect(outputLayer.outputBuffer[1]).to.be.equal(0);
+            
+            done();
+        });
+        
+        it('can backward', function(done) {
+            outputLayer.outputError = [2, 2.5];
+            
+           //console.log(inputLayer);
+           //console.log(outputLayer);
+            
+            outputLayer.backward();
+            connection.backward();
+            inputLayer.backward();
+            
+            expect(outputLayer.inputError.length).to.be.equal(2);
+            expect(outputLayer.inputError[0]).to.be.equal(2);
+            expect(outputLayer.inputError[1]).to.be.equal(2.5);
+            
+            expect(inputLayer.outputError.length).to.be.equal(3);
+            expect(inputLayer.outputError[0]).to.be.equal(2 * 1.1 + 2.5 * 0);
+            expect(inputLayer.outputError[1]).to.be.equal(2 * 1 + 2.5 * 0);
+            expect(inputLayer.outputError[2]).to.be.equal(2 * 1 + 2.5 * 0);
+             
             done();
         });
     });

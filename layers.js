@@ -9,10 +9,11 @@ function ifObjectThenCreateDefaultNeuron(obj) {
     'use strict';
     
     var key, // temp
-        indirection;
+        indirection,
+        ret;
     
     if (typeof obj === 'function') {
-        var ret = new obj();
+        ret = new obj();
         return ret;
     }
     
@@ -48,6 +49,18 @@ function Layer() {
     if (args.length > 1) {
         this.createMixNeurons(args);
     }
+    
+    this.inputBuffer = [];
+    this.outputBuffer = [];
+    this.inputError = [];
+    this.outputError = [];
+    
+    for (i = 0; i < this.neurons.length; i += 1) {
+        this.inputBuffer[i] = 0;
+        this.outputBuffer[i] = 0;
+        this.inputError[i] = 0;
+        this.outputError[i] = 0;
+    }
 }
 
 Layer.prototype.createMixNeurons = function (args) {
@@ -62,7 +75,25 @@ Layer.prototype.createMixNeurons = function (args) {
             neuronType = ifObjectThenCreateDefaultNeuron(args[i * 2]);
             this.neurons.push(neuronType);
         }
-    }   
+    }
+};
+
+Layer.prototype.forward = function () {
+    var self = this;
+    
+    this.neurons.forEach(function (el, index, arr) {
+        self.outputBuffer[index] = el.forward(self.inputBuffer[index]);
+    });
+    
+};
+
+Layer.prototype.backward = function () {
+    var self = this;
+    
+    this.neurons.forEach(function (el, index, arr) {
+        self.inputError[index] = el.backward(self.outputError[index]);
+    });
+    
 };
 
 module.exports = {
