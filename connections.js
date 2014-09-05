@@ -10,6 +10,28 @@ function dotProduct(v0, v1) {
     return sum;
 }
 
+function vectorSum(v0, v1) {
+    'use strict';
+    
+    var ret = [],
+        longer = Math.max(v0.length, v1.length),
+        other = null,
+        temp = 0;
+    
+    longer = (longer === v0.length) ? v0 : v1;
+    other = (longer === v0) ? v1 : v0;
+    
+    longer.forEach(function (el, index) {
+        
+        // the other index might be empty since the other vector is shorter
+        temp = other[index] || 0;
+        
+        ret[index] = el + temp;
+    });
+    
+    return ret;
+}
+
 function matrixVectorMultiplication(matrix, vec) {
     'use strict';
     
@@ -74,7 +96,7 @@ FullConnection.prototype.zeroParameters = function () {
 FullConnection.prototype.forward = function () {
     'use strict';
     
-    this.outputLayer.inputBuffer = matrixVectorMultiplication(this.parameters, this.inputLayer.outputBuffer);
+    this.outputLayer.inputBuffer = vectorSum(this.outputLayer.inputBuffer, matrixVectorMultiplication(this.parameters, this.inputLayer.outputBuffer));
 };
 
 FullConnection.prototype.backward = function () {
@@ -82,12 +104,13 @@ FullConnection.prototype.backward = function () {
     
     var scaledError = transpose(this.parameters, this.inputLayer.outputError.length);
 
-    this.inputLayer.outputError = matrixVectorMultiplication(scaledError, this.outputLayer.inputError);
+    this.inputLayer.outputError = vectorSum(this.inputLayer.outputError, matrixVectorMultiplication(scaledError, this.outputLayer.inputError));
 };
 
 
 module.exports = {
     'dotProduct': dotProduct,
+    'vectorSum': vectorSum,
     'matrixVectorMultiplication': matrixVectorMultiplication,
     'transpose': transpose,
     'FullConnection': FullConnection
