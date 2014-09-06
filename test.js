@@ -88,6 +88,25 @@ describe('Layers', function() {
             done();
         });
         
+        it('each layer has a different name', function(done) {
+            
+            var lookup = {}, test, i;
+            
+            for (i = 0; i < 3; i++) {
+                test = new Layers.Layer({
+                    forward: function(abc) { return 12; },
+                    backward: function(out) { return 12; }
+                }, 5, Neurons.BiasNeuron, 2);
+                
+                
+                expect(test.name.length).to.be.above(2);
+                expect(lookup[test.name]).to.be.undefined;
+                lookup[test.name] = 1;
+            }
+            
+            done();
+        });
+        
         it('each neuron has a different name', function(done) {
             
             var lookup = {};
@@ -267,7 +286,16 @@ describe('Connections', function() {
             var connection = new Connections.FullConnection(inputLayer, outputLayer);
         
             expect(connection.parameters.length).to.be.equal(inputLayer.neurons.length * outputLayer.neurons.length);
-                
+            
+            done();
+        });
+        
+        it('has input and output layers', function(done) {
+            var connection = new Connections.FullConnection(inputLayer, outputLayer);
+        
+            expect(connection.inputLayer).to.not.be.undefined;
+            expect(connection.outputLayer).to.not.be.undefined;
+            
             done();
         });
     });
@@ -282,7 +310,17 @@ describe('Connections', function() {
 
             expect(con.parameters[0]).to.be.equal(0);
             expect(con.parameters[1]).to.be.equal(0);
-                   
+            
+            done();
+        });
+        
+        it('can set params to 1 using zeroParameters()', function(done) {
+            var con = new Connections.FullConnection(inputLayer, outputLayer);
+            
+            con.zeroParameters(1);
+            expect(con.parameters[0]).to.be.equal(1);
+            expect(con.parameters[1]).to.be.equal(1);
+            
             done();
         });
     });
@@ -333,5 +371,57 @@ describe('Connections', function() {
              
             done();
         });
+    });
+});
+
+describe('Network', function() {
+    var net = new network.Network();
+    var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+    var hiddenLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+    var outputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+    
+    var ihConnection = new Connections.FullConnection(inputLayer, hiddenLayer);
+    var hoConnection = new Connections.FullConnection(hiddenLayer, outputLayer);
+    
+    ihConnection.zeroParameters(1);
+    hoConnection.zeroParameters(1);
+    
+    it('can add connection', function(done) {
+        
+        net.addConnection(ihConnection);
+        net.addConnection(hoConnection);
+        
+        expect(Object.keys(net.forwardConnections).length).to.be.equal(2);
+        expect(Object.keys(net.backwardConnections).length).to.be.equal(2);
+        
+        expect(net.forwardConnections[inputLayer.name].length).to.be.equal(1);
+        expect(net.forwardConnections[hiddenLayer.name].length).to.be.equal(1);
+
+        expect(net.forwardConnections[inputLayer.name][0]).to.be.equal(ihConnection);
+        expect(net.forwardConnections[hiddenLayer.name][0]).to.be.equal(hoConnection);
+        
+        done();
+    });
+    
+    it('can set root layer and output layer', function(done) {
+        net.setRootLayer(inputLayer);
+        net.setOutputLayer(outputLayer);
+        
+        expect(net.rootLayer).to.be.not.undefined;
+        expect(net.outputLayer).to.be.not.undefined;
+        
+        done();
+    });
+    
+    it('can forward propogate', function(done) {
+        expect(Object.keys(net.forwardConnections).length).to.be.equal(2);
+        
+        net.forwardPropogate([1,1]);
+        
+        expect(net.outputLayer.outputBuffer.length).to.be.equal(2);
+        expect(net.outputLayer.outputBuffer[0]).to.be.equal(4);
+        expect(net.outputLayer.outputBuffer[0]).to.be.equal(4);
+        
+        done();
     });
 });

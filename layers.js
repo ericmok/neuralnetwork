@@ -44,6 +44,8 @@ function Layer() {
                             "Example: new Layer(IdentityNeuron, 2, BiasNeuron, 1)");
     }
 
+    this.name = Math.random().toString(36).substring(2);
+    
     this.neurons = [];
     
     if (args.length > 1) {

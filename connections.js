@@ -85,11 +85,11 @@ function FullConnection(inputLayer, outputLayer) {
     this.outputLayer = outputLayer;
 }
 
-FullConnection.prototype.zeroParameters = function () {
+FullConnection.prototype.zeroParameters = function (val) {
     'use strict';
     
     this.parameters = this.parameters.map(function (el) {
-        return 0;
+        return val ? val : 0;
     });
 };
 
