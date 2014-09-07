@@ -136,6 +136,31 @@ describe('Layers', function() {
         });
     });
     
+    describe('Helper methods', function() {
+        it('can reset buffers', function(done) {
+            var test = new Layers.Layer(Neurons.IdentityNeuron, 2);
+            test.inputBuffer = [1, 1.1];
+            test.forward();
+            
+            test.resetBuffers();
+            
+            expect(test.inputBuffer.length).to.be.equal(2);
+            expect(test.inputBuffer[0]).to.be.equal(0);
+            expect(test.inputBuffer[1]).to.be.equal(0);
+            
+            expect(test.outputBuffer[0]).to.be.equal(0);
+            expect(test.outputBuffer[1]).to.be.equal(0);
+            
+            expect(test.inputError[0]).to.be.equal(0);
+            expect(test.inputError[1]).to.be.equal(0);
+            
+            expect(test.outputError[0]).to.be.equal(0);
+            expect(test.outputError[1]).to.be.equal(0);
+            
+            done();
+        });
+    });
+    
     describe('Propogation', function() {
         
         it('can forward', function(done) {
@@ -375,53 +400,144 @@ describe('Connections', function() {
 });
 
 describe('Network', function() {
-    var net = new network.Network();
-    var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
-    var hiddenLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
-    var outputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
-    
-    var ihConnection = new Connections.FullConnection(inputLayer, hiddenLayer);
-    var hoConnection = new Connections.FullConnection(hiddenLayer, outputLayer);
-    
-    ihConnection.zeroParameters(1);
-    hoConnection.zeroParameters(1);
-    
-    it('can add connection', function(done) {
-        
-        net.addConnection(ihConnection);
-        net.addConnection(hoConnection);
-        
-        expect(Object.keys(net.forwardConnections).length).to.be.equal(2);
-        expect(Object.keys(net.backwardConnections).length).to.be.equal(2);
-        
-        expect(net.forwardConnections[inputLayer.name].length).to.be.equal(1);
-        expect(net.forwardConnections[hiddenLayer.name].length).to.be.equal(1);
 
-        expect(net.forwardConnections[inputLayer.name][0]).to.be.equal(ihConnection);
-        expect(net.forwardConnections[hiddenLayer.name][0]).to.be.equal(hoConnection);
+    
+    describe('Structure', function() {
+
+
+        describe('can set root layer and output layer', function() {        
+            var net = new network.Network();
+            var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+            var hiddenLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+            var outputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+
+            it('can set root and output layer', function(done) {
+                net.setRootLayer(inputLayer);
+                net.setOutputLayer(outputLayer);
+                
+                expect(net.rootLayer).to.be.not.undefined;
+                expect(net.outputLayer).to.be.not.undefined;
+
+                done();
+            });
+            
+        });
         
-        done();
+        describe('Layer hash', function() {
+            var net = new network.Network();
+            var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+            var hiddenLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+            var outputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+            
+            
+            it('updates when input and output layer are set', function(done) {
+                net.setRootLayer(inputLayer);
+                net.setOutputLayer(outputLayer);
+                
+                expect(Object.keys(net.layers).length).to.be.equal(2);
+                done();
+            });
+            
+            it('updates when layers are explicitly added', function(done) {
+                var currentNumberLayers = Object.keys(net.layers).length;
+
+                net.addLayer(hiddenLayer);
+                expect(Object.keys(net.layers).length).to.be.equal(currentNumberLayers + 1);
+
+                done();
+            });
+            
+            it('updates when connections are added', function(done) {
+                var net = new network.Network();
+                var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+                var hiddenLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+                var outputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+            
+                var currentNumberLayers = Object.keys(net.layers).length;
+                var con = new Connections.FullConnection(inputLayer, hiddenLayer);
+                
+                net.addConnection(con);
+                
+                expect(Object.keys(net.layers).length).to.be.equal(currentNumberLayers + 2);
+                
+                done();
+            });
+        });
+
+        it('can add connection', function(done) {
+            var net = new network.Network();
+            var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+            var hiddenLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+            var outputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+
+            var ihConnection = new Connections.FullConnection(inputLayer, hiddenLayer);
+            var hoConnection = new Connections.FullConnection(hiddenLayer, outputLayer);
+
+            ihConnection.zeroParameters(1);
+            hoConnection.zeroParameters(1);
+            
+            net.addConnection(ihConnection);
+            net.addConnection(hoConnection);
+
+            expect(Object.keys(net.forwardConnections).length).to.be.equal(2);
+            expect(Object.keys(net.backwardConnections).length).to.be.equal(2);
+
+            expect(net.forwardConnections[inputLayer.name].length).to.be.equal(1);
+            expect(net.forwardConnections[hiddenLayer.name].length).to.be.equal(1);
+
+            expect(net.forwardConnections[inputLayer.name][0]).to.be.equal(ihConnection);
+            expect(net.forwardConnections[hiddenLayer.name][0]).to.be.equal(hoConnection);
+
+            done();
+        });
+
+    });
+
+    describe('Propogation', function() {
+        var net = new network.Network();
+        var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+        var hiddenLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+        var outputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+
+        var ihConnection = new Connections.FullConnection(inputLayer, hiddenLayer);
+        var hoConnection = new Connections.FullConnection(hiddenLayer, outputLayer);
+
+        ihConnection.zeroParameters(1);
+        hoConnection.zeroParameters(1);
+
+        it('can forward propogate', function(done) {
+            net.setRootLayer(inputLayer);
+            net.setOutputLayer(outputLayer);
+            net.addConnection(ihConnection);
+            net.addConnection(hoConnection);
+            
+            expect(Object.keys(net.forwardConnections).length).to.be.equal(2);
+
+            net.forwardPropogate([1,1]);
+
+            expect(net.outputLayer.outputBuffer.length).to.be.equal(2);
+            expect(net.outputLayer.outputBuffer[0]).to.be.equal(4);
+            expect(net.outputLayer.outputBuffer[0]).to.be.equal(4);
+
+            net.resetLayers();
+            net.forwardPropogate([1,2]);
+
+            expect(net.outputLayer.outputBuffer.length).to.be.equal(2);
+            expect(net.outputLayer.outputBuffer[0]).to.be.equal(6);
+            expect(net.outputLayer.outputBuffer[0]).to.be.equal(6);
+
+            done();
+        });
+        
+        xit('can backward propogate', function(done) {
+            
+            done();
+        });
+        
+        xit('can train', function(done) {
+            done();
+        });
     });
     
-    it('can set root layer and output layer', function(done) {
-        net.setRootLayer(inputLayer);
-        net.setOutputLayer(outputLayer);
-        
-        expect(net.rootLayer).to.be.not.undefined;
-        expect(net.outputLayer).to.be.not.undefined;
-        
-        done();
-    });
-    
-    it('can forward propogate', function(done) {
-        expect(Object.keys(net.forwardConnections).length).to.be.equal(2);
-        
-        net.forwardPropogate([1,1]);
-        
-        expect(net.outputLayer.outputBuffer.length).to.be.equal(2);
-        expect(net.outputLayer.outputBuffer[0]).to.be.equal(4);
-        expect(net.outputLayer.outputBuffer[0]).to.be.equal(4);
-        
-        done();
-    });
+
 });

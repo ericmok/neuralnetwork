@@ -16,12 +16,20 @@ Network.prototype.setRootLayer = function (layer) {
     'use strict';
     
     this.rootLayer = layer;
+    this.layers[layer.name] = layer;
 };
 
 Network.prototype.setOutputLayer = function (layer) {
     'use strict';
     
     this.outputLayer = layer;
+    this.layers[layer.name] = layer;
+};
+
+Network.prototype.addLayer = function (layer) {
+    'use strict';
+    
+    this.layers[layer.name] = layer;
 };
 
 Network.prototype.addConnection = function (con) {
@@ -32,6 +40,22 @@ Network.prototype.addConnection = function (con) {
 
     this.backwardConnections[con.outputLayer.name] = this.backwardConnections[con.outputLayer.name] || [];
     this.backwardConnections[con.outputLayer.name].push(con);
+    
+    this.layers[con.inputLayer.name] = con.inputLayer;
+    this.layers[con.outputLayer.name] = con.outputLayer;
+};
+
+
+Network.prototype.resetLayers = function () {
+    'use strict';
+    
+    var prop;
+    
+    for (prop in this.layers) {
+        if (this.layers.hasOwnProperty(prop)) {
+            this.layers[prop].resetBuffers();
+        }
+    }
 };
 
 

@@ -57,13 +57,20 @@ function Layer() {
     this.inputError = [];
     this.outputError = [];
     
+    this.resetBuffers();
+}
+
+Layer.prototype.resetBuffers = function () {
+    'use strict';
+    var i;
+    
     for (i = 0; i < this.neurons.length; i += 1) {
         this.inputBuffer[i] = 0;
         this.outputBuffer[i] = 0;
         this.inputError[i] = 0;
         this.outputError[i] = 0;
     }
-}
+};
 
 Layer.prototype.createMixNeurons = function (args) {
     'use strict';
@@ -81,6 +88,8 @@ Layer.prototype.createMixNeurons = function (args) {
 };
 
 Layer.prototype.forward = function () {
+    'use strict';
+
     var self = this;
     
     this.neurons.forEach(function (el, index, arr) {
@@ -90,6 +99,8 @@ Layer.prototype.forward = function () {
 };
 
 Layer.prototype.backward = function () {
+    'use strict';
+    
     var self = this;
     
     this.neurons.forEach(function (el, index, arr) {
