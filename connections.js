@@ -146,7 +146,6 @@ FullConnection.prototype.backward = function () {
     // The error multiplied by the parameter (aka weight)
     this.inputLayer.outputError = vectorSum(this.inputLayer.outputError, scaledErrors);
     
-    // Not sure if it shouldbe transpose
     this.derivatives = outerProduct(this.outputLayer.inputError, this.inputLayer.outputBuffer);
     //console.log('Connection backward > deriv', this.derivatives);
     //console.log('Connection backward > in.outBuf', this.inputLayer.outputBuffer);
