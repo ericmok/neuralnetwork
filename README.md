@@ -18,6 +18,17 @@ If extended to a neural network, histories would be saved.
 ![Architecture](https://github.com/EricMok/neuralnetwork0/blob/master/recurrentArchitecture.png)
 
 
+## Installation
+
+If using Node, then you'd want to require `network.js`.
+
+If you want to use this for your website, you'll want to use browserify to build the node modules.
+
+```
+npm install browserify
+browserify -o yourFile.js network.js
+```
+
 ## Usage
 
 ```javascript
