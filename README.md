@@ -8,6 +8,13 @@ and transfer signals instantaneously.
 
 
 ![Architecture](https://github.com/EricMok/neuralnetwork0/blob/master/architecture.png)
+
+
+#### Recurrent Network
+##### Not implemented
+
+If extended to a neural network, histories would be saved.
+
 ![Architecture](https://github.com/EricMok/neuralnetwork0/blob/master/recurrentArchitecture.png)
 
 
@@ -27,11 +34,6 @@ var outputLayer = new Layer(SigmoidNeuron, 1);
 var ihConnection = new FullConnection(inputLayer, hiddenLayer);
 var hoConnection = new FullConnection(hiddenLayer, outputLayer);
 
-
-// Not sure about this
-// var recurrentConnection = new FullConnection(outputLayer, inputLayer);
-
-
 var network = new NeuralNetwork();
 
 network.setRootLayer(inputLayer);
@@ -43,6 +45,19 @@ network.addConnection(hoConnection);
 network.resetLayers();
 network.forwardPropogate([1,2,3,4]);
 // returns output of network. example: [1]
+
+// Train network a single step on single data point
+network.train([1,1,1,1], [1]);
+network.train([0,1,1,1], [0]);
+network.train([0,0,1,1], [0]);
+network.train([0,0,0,1], [0]);
+network.train([0,0,0,0], [0]);
+
+
+
+// TODO
+// Not sure about this
+// var recurrentConnection = new FullConnection(outputLayer, inputLayer);
 
 
 // TODO
