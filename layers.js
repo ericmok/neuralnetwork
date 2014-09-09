@@ -104,7 +104,8 @@ Layer.prototype.backward = function () {
     var self = this;
     
     this.neurons.forEach(function (el, index, arr) {
-        self.inputError[index] = el.backward(self.outputError[index]);
+        // TODO: Test this
+        self.inputError[index] = el.backward(self.outputError[index], self.outputBuffer[index]);
     });
     
 };

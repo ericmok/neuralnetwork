@@ -108,11 +108,14 @@ Network.prototype.backwardPropogate = function (errorVector) {
     
     function backwardEachConnectionIn(connections) {
         connections.forEach(function (connection) {
-            connections.backward();
+            connection.backward();
             openSet.push(connection.inputLayer);
         });
     }
     
+    this.forEachConnection(function (connection) {
+        connection.resetDerivatives();
+    });
     
     this.outputLayer.outputError = errorVector;
     
@@ -135,6 +138,134 @@ Network.prototype.backwardPropogate = function (errorVector) {
     }
 };
 
+Network.prototype.forEachConnection = function (callback) {
+    'use strict';
+    var i;
+    
+    for (i in this.forwardConnections) {
+        if (this.forwardConnections.hasOwnProperty(i)) {
+            this.forwardConnections[i].forEach(function (el, index) {
+                callback(el);
+            });
+        }
+    }
+};
+
+// TODO:
+Network.prototype.exploreForward = function (layerCallback, connectionsCallback) {
+    'use strict';
+    
+    var self = this,
+        currentOpenSet = [],
+        nextOpenSet = [],
+        currentLayer,
+        connections;
+    
+    currentOpenSet.push(this.inputLayer);
+    
+    while (currentOpenSet.length > 0 || nextOpenSet.length > 0) {
+        
+        // tick tock
+        if (currentOpenSet.length === 0) {
+            currentOpenSet = nextOpenSet;
+            nextOpenSet = [];
+        }
+        
+        currentLayer = currentOpenSet.shift();
+        
+        layerCallback(currentLayer);
+        
+        connections = this.forwardConnections[currentLayer.name] || [];
+        
+        nextOpenSet.push(connectionsCallback(connections));
+        
+        // Unless recurrent...
+        if (currentLayer === this.inputLayer) {
+            break;
+        }
+    }
+};
+
+
+Network.prototype.train = function (input, output) {
+    'use strict';
+    
+    //console.log('TRAINING');
+    
+    if (input.length !== this.rootLayer.inputBuffer.length) {
+        throw new Error('Wrong input dimensions');
+    }
+    if (output.length !== this.outputLayer.outputBuffer.length) {
+        throw new Error('Wrong output dimensions');
+    }
+    
+    var self = this,    
+        connections,
+        i,
+        j,
+        step = 0.2 + (Math.random > 0.5 ? 0.1 * Math.random() : - 0.1 * Math.random());
+    
+    this.resetLayers();
+    this.forwardPropogate(input);
+
+    // calculate the error
+     
+//    overallError = output.reduce(function (prevValue, currValue, index) {
+//        return prevValue + (self.outputLayer.outputBuffer[index] - currValue);
+//    }, 0);
+//    console.log('error', overallError);
+//    
+//    overallError = overallError / this.outputLayer.outputBuffer.length;
+//    
+//    this.outputLayer.outputError = self.outputLayer.outputError.map(function (el, index) {
+//        return overallError;
+//    });
+    
+    for (i in this.forwardConnections) {
+        if (this.forwardConnections.hasOwnProperty(i)) {
+            this.forwardConnections[i].forEach(function (con) {
+                con.resetDerivatives();
+            });
+        }
+    }
+    
+    this.outputLayer.outputError = output.map(function (target, index) {
+        return target - self.outputLayer.outputBuffer[index];
+        //return 0;
+    });
+    
+    console.log('OUTPUT BUFFER', this.outputLayer.outputBuffer);
+    console.log('OUTPUT ERROR', this.outputLayer.outputError, 'Desired:', output);
+    console.log('\n');
+    
+    this.backwardPropogate(output);
+    
+
+    for (i in this.forwardConnections) {
+        if (this.forwardConnections.hasOwnProperty(i)) {
+            connections = this.forwardConnections[i];
+
+            connections.forEach(function (connection) {
+                                
+                if (connection.parameters.length !== connection.derivatives.length) {
+                    throw new Error('Wrong derivative dims');
+                }
+                
+                connection.resetDerivatives();
+                
+                //console.log('params - derivs', connection.parameters, '-', connection.derivatives.map(function (el) { return step * el; }));
+                
+                // TODO: Subtract?
+                connection.parameters = connection.parameters.map(function (el, index) {
+                    return  el + step * connection.derivatives[index];
+                });
+                
+                //console.log('params after ds', connection.parameters);
+            });
+        }
+    }
+
+};
 
 
 module.exports = {

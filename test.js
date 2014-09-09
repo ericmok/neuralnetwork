@@ -301,9 +301,50 @@ describe('Connections', function() {
             
             done();
         });
+        
+        it('can zero out vectors', function(done) {
+            var vec = [1,2,3,4];
+            var result = Connections.zero(vec);
+            
+            expect(vec[0]).to.be.equal(0);
+            expect(vec[1]).to.be.equal(0);
+            expect(vec[2]).to.be.equal(0);
+            expect(vec[3]).to.be.equal(0);
+            
+            // Should this be Immutable?
+            expect(result[0]).to.be.equal(0);
+            expect(result[1]).to.be.equal(0);
+            expect(result[2]).to.be.equal(0);
+            expect(result[3]).to.be.equal(0);
+            
+            done();
+        });
+        
+        it('can outer product', function(done) {
+            var result = Connections.outerProduct([1,2,3],[1,2]);
+            
+            expect(result.length).to.be.equal(6);
+            expect(result[0]).to.be.equal(1);
+            expect(result[1]).to.be.equal(2);
+            expect(result[2]).to.be.equal(2);
+            expect(result[3]).to.be.equal(4);
+            expect(result[4]).to.be.equal(3);
+            expect(result[5]).to.be.equal(6);
+            
+            var result = Connections.outerProduct([0, 0], [0, 1]);
+            
+            expect(result.length).to.be.equal(4);
+            expect(result[0]).to.be.equal(0);
+            expect(result[1]).to.be.equal(0);
+            expect(result[2]).to.be.equal(0);
+            expect(result[3]).to.be.equal(0);
+            
+            done();
+        });
+
     });
     
-    describe('Constructor', function() {
+    describe('Connection Constructor', function() {
         var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2, Neurons.BiasNeuron, 1);
         var outputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
         
@@ -323,6 +364,7 @@ describe('Connections', function() {
             
             done();
         });
+        
     });
     
     describe('Connection State', function() {
@@ -331,7 +373,7 @@ describe('Connections', function() {
             
         it('can zero parameters', function(done) {
             var con = new Connections.FullConnection(inputLayer, outputLayer);
-            con.zeroParameters();
+            con.resetParameters();
 
             expect(con.parameters[0]).to.be.equal(0);
             expect(con.parameters[1]).to.be.equal(0);
@@ -339,10 +381,10 @@ describe('Connections', function() {
             done();
         });
         
-        it('can set params to 1 using zeroParameters()', function(done) {
+        it('can set params to 1 using resetParameters()', function(done) {
             var con = new Connections.FullConnection(inputLayer, outputLayer);
             
-            con.zeroParameters(1);
+            con.resetParameters(1);
             expect(con.parameters[0]).to.be.equal(1);
             expect(con.parameters[1]).to.be.equal(1);
             
@@ -394,6 +436,9 @@ describe('Connections', function() {
             expect(inputLayer.outputError[1]).to.be.equal(2 * 1 + 2.5 * 0);
             expect(inputLayer.outputError[2]).to.be.equal(2 * 1 + 2.5 * 0);
              
+            // TODO: expand this test
+            expect(connection.derivatives.length).to.be.equal(connection.parameters.length);
+            
             done();
         });
     });
@@ -473,8 +518,8 @@ describe('Network', function() {
             var ihConnection = new Connections.FullConnection(inputLayer, hiddenLayer);
             var hoConnection = new Connections.FullConnection(hiddenLayer, outputLayer);
 
-            ihConnection.zeroParameters(1);
-            hoConnection.zeroParameters(1);
+            ihConnection.resetParameters(1);
+            hoConnection.resetParameters(1);
             
             net.addConnection(ihConnection);
             net.addConnection(hoConnection);
@@ -493,7 +538,7 @@ describe('Network', function() {
 
     });
 
-    describe('Propogation', function() {
+    describe('Network Propogation', function() {
         var net = new network.Network();
         var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
         var hiddenLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
@@ -502,8 +547,8 @@ describe('Network', function() {
         var ihConnection = new Connections.FullConnection(inputLayer, hiddenLayer);
         var hoConnection = new Connections.FullConnection(hiddenLayer, outputLayer);
 
-        ihConnection.zeroParameters(1);
-        hoConnection.zeroParameters(1);
+        ihConnection.resetParameters(1);
+        hoConnection.resetParameters(1);
 
         it('can forward propogate', function(done) {
             net.setRootLayer(inputLayer);
@@ -529,12 +574,188 @@ describe('Network', function() {
             done();
         });
         
-        xit('can backward propogate', function(done) {
+        it('can backward propogate', function(done) {
+            net.resetLayers();
+            net.forwardPropogate([1,1]);
+            net.backwardPropogate([1,1]);
+            
+            var inErr = net.rootLayer.inputError;
+            expect(inErr[0]).to.be.equal(4);
+            expect(inErr[1]).to.be.equal(4);
+            
+            
+            var derivs = ihConnection.derivatives;
+            
+            expect(derivs.length).to.be.equal(4);
+            expect(derivs[0]).to.be.equal(ihConnection.outputLayer.inputError[0] * ihConnection.inputLayer.outputBuffer[0]);
+            expect(derivs[1]).to.be.equal(ihConnection.outputLayer.inputError[1] * ihConnection.inputLayer.outputBuffer[0]);
+            expect(derivs[2]).to.be.equal(ihConnection.outputLayer.inputError[0] * ihConnection.inputLayer.outputBuffer[1]);
+            expect(derivs[3]).to.be.equal(ihConnection.outputLayer.inputError[1] * ihConnection.inputLayer.outputBuffer[1]);
+            
+            derivs = hoConnection.derivatives;
+            expect(derivs.length).to.be.equal(4);
+            expect(derivs[0]).to.be.equal(2);
+            expect(derivs[1]).to.be.equal(2);
+            expect(derivs[2]).to.be.equal(2);
+            expect(derivs[3]).to.be.equal(2);
+            
+            net.resetLayers();
+            net.forwardPropogate([1,1]);
+            net.backwardPropogate([0,1]); // test was 1,1, but need to test asymmetric case
+            
+            var inErr = net.rootLayer.inputError;
+            expect(inErr[0]).to.be.equal(2);
+            expect(inErr[1]).to.be.equal(2);
+            
+
+            // ATTENTION! IF THE WEIGHTS ARE THE SAME, THE ERRORS ARE THE SAME!!!1111
+            derivs = ihConnection.derivatives;
+            
+            expect(derivs.length).to.be.equal(4);
+            expect(derivs[0]).to.be.equal(ihConnection.outputLayer.inputError[0] * ihConnection.inputLayer.outputBuffer[0]);
+            expect(derivs[1]).to.be.equal(ihConnection.outputLayer.inputError[1] * ihConnection.inputLayer.outputBuffer[0]);
+            expect(derivs[2]).to.be.equal(ihConnection.outputLayer.inputError[0] * ihConnection.inputLayer.outputBuffer[1]);
+            expect(derivs[3]).to.be.equal(ihConnection.outputLayer.inputError[1] * ihConnection.inputLayer.outputBuffer[1]);
+            
+            derivs = ihConnection.derivatives;
+            expect(derivs.length).to.be.equal(4);
+            expect(derivs[0]).to.be.equal(1);
+            expect(derivs[1]).to.be.equal(1);
+            expect(derivs[2]).to.be.equal(1);
+            expect(derivs[3]).to.be.equal(1);
+            
+                        
+            derivs = hoConnection.derivatives;
+            expect(derivs.length).to.be.equal(4);
+            expect(derivs[0]).to.be.equal(0);
+            expect(derivs[1]).to.be.equal(0);
+            expect(derivs[2]).to.be.equal(2);
+            expect(derivs[3]).to.be.equal(2);
+            
+            // Make sure when error is 0 the derivs are zero
+            derivs = hoConnection.derivatives;
+            net.resetLayers();
+            net.backwardPropogate([0,0]);
+            expect(hoConnection.inputLayer.inputError[0]).to.be.equal(0);
+            
+            expect(derivs.length).to.be.equal(4);
+            expect(derivs[0]).to.be.equal(0);
+            expect(derivs[1]).to.be.equal(0);
+            expect(derivs[2]).to.be.equal(0);
+            expect(derivs[3]).to.be.equal(0);
+        
+            derivs = ihConnection.derivatives;
+            net.resetLayers();
+            net.backwardPropogate([0,0]);
+            expect(derivs.length).to.be.equal(4);
+            expect(derivs[0]).to.be.equal(0);
+            expect(derivs[1]).to.be.equal(0);
+            expect(derivs[2]).to.be.equal(0);
+            expect(derivs[3]).to.be.equal(0);
+            
+            done();
+        });
+        
+        it('can loop through connections', function(done) {
+            var counter = 0;
+            
+            net.forEachConnection(function(con) {
+                counter += 1;
+                expect(con.inputLayer).to.not.be.undefined;
+                expect(con.outputLayer).to.not.be.undefined;
+            });
+            
+            expect(counter).to.be.equal(2);
             
             done();
         });
         
         xit('can train', function(done) {
+            var i;
+            
+            ihConnection.parameters = ihConnection.parameters.map(function(el) {
+                return Math.random();
+            });
+            hoConnection.parameters = hoConnection.parameters.map(function(el) {
+                return Math.random();
+            });
+            
+            for (i = 0; i < 20; i += 1) {
+                net.resetLayers();
+                net.train([1,1], [-1,1]);
+                //console.log('\n output', net.outputLayer.outputBuffer, '\n\n');
+            }
+            
+            net.resetLayers();
+            net.forwardPropogate([1,1]);
+            console.log('FINAL:', net.outputLayer.outputBuffer);
+            console.log(['Expected:[',-1,',',1,']'].join(' '));
+            expect(net.outputLayer.outputBuffer[0]).to.be.below(0);
+            expect(net.outputLayer.outputBuffer[1]).to.be.above(0);
+            
+            done();
+        });
+        
+        it('can train with larger hidden layer', function(done) {
+            var net = new network.Network();
+            var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+            var hiddenLayer = new Layers.Layer(Neurons.IdentityNeuron, 4, Neurons.BiasNeuron, 1);
+            var outputLayer = new Layers.Layer(Neurons.SigmoidNeuron, 1);
+            
+            var ihConnection = new Connections.FullConnection(inputLayer, hiddenLayer);
+            var hoConnection = new Connections.FullConnection(hiddenLayer, outputLayer);
+            
+            ihConnection.parameters = ihConnection.parameters.map(function(el) {
+                return Math.random();
+            });
+            hoConnection.parameters = hoConnection.parameters.map(function(el) {
+                return Math.random();
+            });
+            
+            net.setRootLayer(inputLayer);
+            net.setOutputLayer(outputLayer);
+            net.addConnection(ihConnection);
+            net.addConnection(hoConnection);
+            
+            net.resetLayers();
+            
+            for (var i = 0; i < 200; i += 1) {
+                net.train([0,0], [0]);
+                net.train([0,1], [0]);
+                net.train([1,0], [0]);
+                net.train([1,1], [1]);
+                //console.log('input -> hidden derivs');
+                //console.log(ihConnection.derivatives);
+                //console.log('hidden -> output derivs');
+                //console.log(hoConnection.derivatives);
+                ihConnection.resetDerivatives();
+                hoConnection.resetDerivatives();
+            }
+            
+            net.resetLayers();
+            net.forwardPropogate([1,1]);
+            console.log('FINAL: [1,1]=>', net.outputLayer.outputBuffer);
+            console.log(['Expected:[1]'].join(' '));
+            expect(net.outputLayer.outputBuffer[0]).to.be.above(0.6);
+
+            net.resetLayers();
+            net.forwardPropogate([0,0]);
+            console.log('FINAL: [0,0]=>', net.outputLayer.outputBuffer);
+            console.log(['Expected:[0]'].join(' '));
+            expect(net.outputLayer.outputBuffer[0]).to.be.below(0.6);
+ 
+            net.resetLayers();
+            net.forwardPropogate([0,1]);
+            console.log('FINAL: [0,1]=>', net.outputLayer.outputBuffer);
+            console.log(['Expected:[0]'].join(' '));
+            expect(net.outputLayer.outputBuffer[0]).to.be.below(0.4);
+  
+            net.resetLayers();
+            net.forwardPropogate([1,0]);
+            console.log('FINAL: [1,0]=>', net.outputLayer.outputBuffer);
+            console.log(['Expected: [0]'].join(' '));
+            expect(net.outputLayer.outputBuffer[0]).to.be.below(0.4);
+ 
             done();
         });
     });

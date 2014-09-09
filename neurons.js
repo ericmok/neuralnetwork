@@ -43,15 +43,33 @@
         return 1;
     };
     
+    /**
+    Nothing is backpropogated
+    */
     BiasNeuron.prototype.backward = function () {
-        return 1;
+        return 0;
+    };
+    
+    
+    function SigmoidNeuron() {
+        Neuron.prototype.constructor.apply(this, arguments);
+    }
+    
+    SigmoidNeuron.prototype.forward = function(input) {
+        return 1.0 / (1.0 + Math.exp(-input));
+    };
+    
+    // TODO: Test this
+    SigmoidNeuron.prototype.backward = function(err, output) {
+        return output * (1 - output) * err;
     };
     
     
     module.exports = {
         'Neuron': Neuron,
         'IdentityNeuron': IdentityNeuron,
-        'BiasNeuron': BiasNeuron
+        'BiasNeuron': BiasNeuron,
+        'SigmoidNeuron': SigmoidNeuron
     };
 }());
 

@@ -8,6 +8,7 @@ and transfer signals instantaneously.
 
 
 ![Architecture](https://github.com/EricMok/neuralnetwork0/blob/master/architecture.png)
+![Architecture](https://github.com/EricMok/neuralnetwork0/blob/master/recurrentArchitecture.png)
 
 
 ##Todo:
@@ -23,19 +24,23 @@ var outputLayer = new Layer(SigmoidNeuron, 1);
 // Layer of [ <SigmoidNeuron> x 1 ]
 
 
-var ihConnection = inputLayer.connect(FullConnection, hiddenLayer);
-var hoConnection = hiddenLayer.connect(FullConnection, outputLayer);
+
+var ihConnection = new FullConnection(inputLayer, hiddenLayer);
+var hoConnection = new FullConnection(hiddenLayer, outputLayer);
 
 
 // Not sure about this
-// var recurrentConnection = hiddenLayer.connect(FullConnection, outputLayer);
+// var recurrentConnection = new FullConnection(outputLayer, inputLayer);
 
 
 var network = new NeuralNetwork();
+
 network.setRootLayer(inputLayer);
 network.setOutputLayer(outputLayer);
 
-
+network.addConnection(ihConnection);
+network.addConnection(hoConnection);
+    
 var output = network.activate( [1,2,3,4,1] );
 
 
@@ -45,9 +50,8 @@ network.train( [ { in: [1,2,3,4,1], out: [1],
                 } ], 1000 ); 
 
 
-ihConnection.getWeights();
-hoConnection.getWeights();
-
+ihConnection.parameters();
+hoConnection.parameters();
 
 ```
 
@@ -114,17 +118,21 @@ var generalLayerExample = new GeneralLayer(function() {
 
 Technically more general than layers. They allow many to many relationships as opposed to `Layer`'s one to one relationship.
 
+
+
 ```javascript
 
-var ExampleConnection = {
+// Create a new connection
+function ExampleConnection = Connection.create({
     forward: function(params, inputBuffer, outputBuffer) {
         outputBuffer = dotProduct(params, inputBuffer);
     },
     backward: function(params, inputError, outputError) {
         inputError = dotProduct( transpose(params), outputError );
-        // return dotProduct( transpose(params), outputError ); instead?
+    }, train: function(params, inputError, outputError) {
+        
     }
-};
+});
 
 network.addConnection(ExampleConnection, inputLayer, hiddenLayer);
 network.addConnection(ExampleConnection, hiddenLayer, outputLayer);
