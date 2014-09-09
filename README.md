@@ -11,7 +11,7 @@ and transfer signals instantaneously.
 ![Architecture](https://github.com/EricMok/neuralnetwork0/blob/master/recurrentArchitecture.png)
 
 
-##Todo:
+## Usage
 
 ```javascript
 var inputLayer = new Layer(IdentityNeuron, 4);
@@ -22,7 +22,6 @@ var hiddenLayer = new Layer(SigmoidNeuron, 16, RectifiedLinearNeuron, 16, BiasNe
 
 var outputLayer = new Layer(SigmoidNeuron, 1);
 // Layer of [ <SigmoidNeuron> x 1 ]
-
 
 
 var ihConnection = new FullConnection(inputLayer, hiddenLayer);
@@ -40,18 +39,25 @@ network.setOutputLayer(outputLayer);
 
 network.addConnection(ihConnection);
 network.addConnection(hoConnection);
-    
-var output = network.activate( [1,2,3,4,1] );
+   
+network.resetLayers();
+network.forwardPropogate([1,2,3,4]);
+// returns output of network. example: [1]
 
 
+// TODO
+// var output = network.activate( [1,2,3,4,1] );
+
+
+// TODO
 // Train the network for 1000 epochs using backprop
-network.train( [ { in: [1,2,3,4,1], out: [1],
-                   in: [0,0,0,0,1], out: [0.1], // etc.
-                } ], 1000 ); 
+//network.train( [ { in: [1,2,3,4,1], out: [1],
+//                   in: [0,0,0,0,1], out: [0.1], // etc.
+//                } ], 1000 ); 
 
-
-ihConnection.parameters();
-hoConnection.parameters();
+// TODO
+//ihConnection.parameters();
+//hoConnection.parameters();
 
 ```
 
@@ -74,6 +80,8 @@ When training, layers backpropogate the error by undoing the forward propogation
 
 
 ### Custom activation functions
+
+##### Not yet implemented
 
 ```javascript
 
@@ -118,7 +126,7 @@ var generalLayerExample = new GeneralLayer(function() {
 
 Technically more general than layers. They allow many to many relationships as opposed to `Layer`'s one to one relationship.
 
-
+##### Not yet implemented
 
 ```javascript
 

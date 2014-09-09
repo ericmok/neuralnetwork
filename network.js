@@ -96,6 +96,8 @@ Network.prototype.forwardPropogate = function (input) {
             break;
         }
     }
+    
+    return this.outputLayer.outputBuffer;
 };
 
 Network.prototype.backwardPropogate = function (errorVector) {
@@ -187,58 +189,35 @@ Network.prototype.exploreForward = function (layerCallback, connectionsCallback)
 };
 
 
-Network.prototype.train = function (input, output) {
+Network.prototype.train = function (input, targetVector) {
     'use strict';
-    
-    //console.log('TRAINING');
     
     if (input.length !== this.rootLayer.inputBuffer.length) {
         throw new Error('Wrong input dimensions');
     }
-    if (output.length !== this.outputLayer.outputBuffer.length) {
+    if (targetVector.length !== this.outputLayer.outputBuffer.length) {
         throw new Error('Wrong output dimensions');
     }
     
-    var self = this,    
+    var self = this,
         connections,
         i,
         j,
-        step = 0.2 + (Math.random > 0.5 ? 0.1 * Math.random() : - 0.1 * Math.random());
+        errorVector = [],
+        step = 0.2;
+    
+    this.forEachConnection(function (con) {
+        con.resetDerivatives();
+    });
     
     this.resetLayers();
     this.forwardPropogate(input);
-
-    // calculate the error
-     
-//    overallError = output.reduce(function (prevValue, currValue, index) {
-//        return prevValue + (self.outputLayer.outputBuffer[index] - currValue);
-//    }, 0);
-//    console.log('error', overallError);
-//    
-//    overallError = overallError / this.outputLayer.outputBuffer.length;
-//    
-//    this.outputLayer.outputError = self.outputLayer.outputError.map(function (el, index) {
-//        return overallError;
-//    });
     
-    for (i in this.forwardConnections) {
-        if (this.forwardConnections.hasOwnProperty(i)) {
-            this.forwardConnections[i].forEach(function (con) {
-                con.resetDerivatives();
-            });
-        }
-    }
-    
-    this.outputLayer.outputError = output.map(function (target, index) {
+    errorVector = targetVector.map(function (target, index) {
         return target - self.outputLayer.outputBuffer[index];
-        //return 0;
     });
     
-    console.log('OUTPUT BUFFER', this.outputLayer.outputBuffer);
-    console.log('OUTPUT ERROR', this.outputLayer.outputError, 'Desired:', output);
-    console.log('\n');
-    
-    this.backwardPropogate(output);
+    this.backwardPropogate(errorVector);
     
 
     for (i in this.forwardConnections) {
@@ -250,17 +229,11 @@ Network.prototype.train = function (input, output) {
                 if (connection.parameters.length !== connection.derivatives.length) {
                     throw new Error('Wrong derivative dims');
                 }
-                
-                connection.resetDerivatives();
-                
-                //console.log('params - derivs', connection.parameters, '-', connection.derivatives.map(function (el) { return step * el; }));
-                
-                // TODO: Subtract?
+ 
                 connection.parameters = connection.parameters.map(function (el, index) {
-                    return  el + step * connection.derivatives[index];
+                    return el + step * connection.derivatives[index];
                 });
-                
-                //console.log('params after ds', connection.parameters);
+             
             });
         }
     }

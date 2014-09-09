@@ -574,6 +574,17 @@ describe('Network', function() {
             done();
         });
         
+        it('forward propogate returns outputbuffer', function(done) {
+            net.resetLayers();
+            var result = net.forwardPropogate([1,2]);
+
+            expect(result.length).to.be.equal(2);
+            expect(result[0]).to.be.equal(6);
+            expect(result[0]).to.be.equal(6);
+            
+            done();
+        });
+        
         it('can backward propogate', function(done) {
             net.resetLayers();
             net.forwardPropogate([1,1]);
@@ -670,7 +681,7 @@ describe('Network', function() {
             done();
         });
         
-        xit('can train', function(done) {
+        it('can train', function(done) {
             var i;
             
             ihConnection.parameters = ihConnection.parameters.map(function(el) {
@@ -680,7 +691,7 @@ describe('Network', function() {
                 return Math.random();
             });
             
-            for (i = 0; i < 20; i += 1) {
+            for (i = 0; i < 100; i += 1) {
                 net.resetLayers();
                 net.train([1,1], [-1,1]);
                 //console.log('\n output', net.outputLayer.outputBuffer, '\n\n');
@@ -699,7 +710,7 @@ describe('Network', function() {
         it('can train with larger hidden layer', function(done) {
             var net = new network.Network();
             var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
-            var hiddenLayer = new Layers.Layer(Neurons.IdentityNeuron, 4, Neurons.BiasNeuron, 1);
+            var hiddenLayer = new Layers.Layer(Neurons.SigmoidNeuron, 4, Neurons.BiasNeuron, 1);
             var outputLayer = new Layers.Layer(Neurons.SigmoidNeuron, 1);
             
             var ihConnection = new Connections.FullConnection(inputLayer, hiddenLayer);
@@ -719,17 +730,11 @@ describe('Network', function() {
             
             net.resetLayers();
             
-            for (var i = 0; i < 200; i += 1) {
+            for (var i = 0; i < 2000; i += 1) {
                 net.train([0,0], [0]);
                 net.train([0,1], [0]);
                 net.train([1,0], [0]);
                 net.train([1,1], [1]);
-                //console.log('input -> hidden derivs');
-                //console.log(ihConnection.derivatives);
-                //console.log('hidden -> output derivs');
-                //console.log(hoConnection.derivatives);
-                ihConnection.resetDerivatives();
-                hoConnection.resetDerivatives();
             }
             
             net.resetLayers();
@@ -742,7 +747,7 @@ describe('Network', function() {
             net.forwardPropogate([0,0]);
             console.log('FINAL: [0,0]=>', net.outputLayer.outputBuffer);
             console.log(['Expected:[0]'].join(' '));
-            expect(net.outputLayer.outputBuffer[0]).to.be.below(0.6);
+            expect(net.outputLayer.outputBuffer[0]).to.be.below(0.4);
  
             net.resetLayers();
             net.forwardPropogate([0,1]);
