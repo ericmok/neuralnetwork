@@ -59,17 +59,29 @@
         return 1.0 / (1.0 + Math.exp(-input));
     };
     
-    // TODO: Test this
+    // Output is the activation value created by forward
     SigmoidNeuron.prototype.backward = function(err, output) {
         return output * (1 - output) * err;
     };
+        
+    function RectifiedLinearNeuron() {
+        Neuron.prototype.constructor.apply(this, arguments);
+    }
     
+    RectifiedLinearNeuron.prototype.forward = function (input) {
+        return Math.max(0, input);
+    };
+    
+    RectifiedLinearNeuron.prototype.backward = function (err, output) {
+        return ((output > 0) ? err : 0);
+    };
     
     module.exports = {
         'Neuron': Neuron,
         'IdentityNeuron': IdentityNeuron,
         'BiasNeuron': BiasNeuron,
-        'SigmoidNeuron': SigmoidNeuron
+        'SigmoidNeuron': SigmoidNeuron,
+        'RectifiedLinearNeuron': RectifiedLinearNeuron
     };
 }());
 
