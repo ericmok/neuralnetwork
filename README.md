@@ -25,8 +25,10 @@ If using Node, then you'd want to require `network.js`.
 If you want to use this for your website, you'll want to use browserify to build the node modules.
 
 ```
-npm install browserify
-browserify -o yourFile.js network.js
+npm install -g browserify
+
+// In the lib folder
+browserify yourFile.js -o network.js
 ```
 
 ## Usage
