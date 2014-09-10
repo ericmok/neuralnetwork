@@ -6,7 +6,7 @@ var chai = require('chai'),
     should = chai.should(),
     expect = chai.expect;
 
-var network = require('./network'),
+var network = require('../lib/network'),
     Neurons = network.Neurons,
     Connections = network.Connections,
     Layers = network.Layers;
