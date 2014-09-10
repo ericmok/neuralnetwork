@@ -34,6 +34,16 @@ browserify yourFile.js -o network.js
 ## Usage
 
 ```javascript
+// Example imports... 
+var net = require('./lib/network');
+var NeuralNetwork = net.Network,
+    Layer = net.Layers.Layer,
+    Connections = net.Connections,
+    Neurons = net.Neurons,
+    SigmoidNeuron = Neurons.SigmoidNeuron,
+    FullConnection = Connections.FullConnection; 
+
+
 var inputLayer = new Layer(IdentityNeuron, 4);
 // Layer of [ <IdentityNeuron> x 4 ]
 
