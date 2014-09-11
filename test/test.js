@@ -723,6 +723,120 @@ describe('Network', function() {
             done();
         });
         
+        it('can train with momentum option (not a great test)', function(done) {
+            var net = new network.Network();
+            var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+            var hiddenLayer = new Layers.Layer(Neurons.SigmoidNeuron, 4, Neurons.BiasNeuron, 1);
+            var outputLayer = new Layers.Layer(Neurons.SigmoidNeuron, 1);
+            
+            var ihConnection = new Connections.FullConnection(inputLayer, hiddenLayer);
+            var hoConnection = new Connections.FullConnection(hiddenLayer, outputLayer);
+            
+            ihConnection.parameters = ihConnection.parameters.map(function(el) {
+                return Math.random();
+            });
+            hoConnection.parameters = hoConnection.parameters.map(function(el) {
+                return Math.random();
+            });
+            
+            net.setRootLayer(inputLayer);
+            net.setOutputLayer(outputLayer);
+            net.addConnection(ihConnection);
+            net.addConnection(hoConnection);
+            
+            net.resetLayers();
+            
+            for (var i = 0; i < 1200; i += 1) {
+                net.train([0,0], [0], {momentum: 0.1});
+                net.train([0,1], [0], {momentum: 0.1});
+                net.train([1,0], [0], {momentum: 0.1});
+                net.train([1,1], [1], {momentum: 0.1});
+            }
+            
+            net.resetLayers();
+            net.forwardPropogate([1,1]);
+            console.log('FINAL: [1,1]=>', net.outputLayer.outputBuffer);
+            console.log(['Expected:[1]'].join(' '));
+            expect(net.outputLayer.outputBuffer[0]).to.be.above(0.6);
+
+            net.resetLayers();
+            net.forwardPropogate([0,0]);
+            console.log('FINAL: [0,0]=>', net.outputLayer.outputBuffer);
+            console.log(['Expected:[0]'].join(' '));
+            expect(net.outputLayer.outputBuffer[0]).to.be.below(0.4);
+ 
+            net.resetLayers();
+            net.forwardPropogate([0,1]);
+            console.log('FINAL: [0,1]=>', net.outputLayer.outputBuffer);
+            console.log(['Expected:[0]'].join(' '));
+            expect(net.outputLayer.outputBuffer[0]).to.be.below(0.4);
+  
+            net.resetLayers();
+            net.forwardPropogate([1,0]);
+            console.log('FINAL: [1,0]=>', net.outputLayer.outputBuffer);
+            console.log(['Expected: [0]'].join(' '));
+            expect(net.outputLayer.outputBuffer[0]).to.be.below(0.4);
+ 
+            done();
+        });
+        
+        it('can train with dropout option (not a great test)', function(done) {
+            var net = new network.Network();
+            var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+            var hiddenLayer = new Layers.Layer(Neurons.SigmoidNeuron, 4, Neurons.BiasNeuron, 1);
+            var outputLayer = new Layers.Layer(Neurons.SigmoidNeuron, 1);
+            
+            var ihConnection = new Connections.FullConnection(inputLayer, hiddenLayer);
+            var hoConnection = new Connections.FullConnection(hiddenLayer, outputLayer);
+            
+            ihConnection.parameters = ihConnection.parameters.map(function(el) {
+                return Math.random();
+            });
+            hoConnection.parameters = hoConnection.parameters.map(function(el) {
+                return Math.random();
+            });
+            
+            net.setRootLayer(inputLayer);
+            net.setOutputLayer(outputLayer);
+            net.addConnection(ihConnection);
+            net.addConnection(hoConnection);
+            
+            net.resetLayers();
+            
+            for (var i = 0; i < 1200; i += 1) {
+                net.train([0,0], [0], {dropout: 0.1});
+                net.train([0,1], [0], {dropout: 0.1});
+                net.train([1,0], [0], {dropout: 0.1});
+                net.train([1,1], [1], {dropout: 0.1});
+            }
+            
+            net.resetLayers();
+            net.forwardPropogate([1,1]);
+            console.log('FINAL: [1,1]=>', net.outputLayer.outputBuffer);
+            console.log(['Expected:[1]'].join(' '));
+            expect(net.outputLayer.outputBuffer[0]).to.be.above(0.6);
+
+            net.resetLayers();
+            net.forwardPropogate([0,0]);
+            console.log('FINAL: [0,0]=>', net.outputLayer.outputBuffer);
+            console.log(['Expected:[0]'].join(' '));
+            expect(net.outputLayer.outputBuffer[0]).to.be.below(0.4);
+ 
+            net.resetLayers();
+            net.forwardPropogate([0,1]);
+            console.log('FINAL: [0,1]=>', net.outputLayer.outputBuffer);
+            console.log(['Expected:[0]'].join(' '));
+            expect(net.outputLayer.outputBuffer[0]).to.be.below(0.4);
+  
+            net.resetLayers();
+            net.forwardPropogate([1,0]);
+            console.log('FINAL: [1,0]=>', net.outputLayer.outputBuffer);
+            console.log(['Expected: [0]'].join(' '));
+            expect(net.outputLayer.outputBuffer[0]).to.be.below(0.4);
+ 
+            done();
+        });
+        
         it('can train with larger hidden layer', function(done) {
             var net = new network.Network();
             var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
