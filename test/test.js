@@ -697,8 +697,16 @@ describe('Network', function() {
             done();
         });
         
+                
+        it('can meanSquaredError', function(done) {
+            expect(network.meanSquaredError([-2,3])).to.be.equal((4 + 9) / 2);
+            expect(network.meanSquaredError([1,1])).to.be.equal(1);
+            
+            done();
+        });
+        
         it('can train', function(done) {
-            var i;
+            var i, initialError, finalError;
             
             ihConnection.parameters = ihConnection.parameters.map(function(el) {
                 return Math.random();
@@ -707,9 +715,10 @@ describe('Network', function() {
                 return Math.random();
             });
             
+            initialError = net.train([1,1], [-1,1]);
             for (i = 0; i < 100; i += 1) {
                 net.resetLayers();
-                net.train([1,1], [-1,1]);
+                finalError = net.train([1,1], [-1,1]);
                 //console.log('\n output', net.outputLayer.outputBuffer, '\n\n');
             }
             
@@ -720,10 +729,13 @@ describe('Network', function() {
             expect(net.outputLayer.outputBuffer[0]).to.be.below(0);
             expect(net.outputLayer.outputBuffer[1]).to.be.above(0);
             
+            expect(finalError).to.be.below(initialError);
+            
             done();
         });
         
-        it('can train with momentum option (not a great test)', function(done) {
+        it('can train AND task with momentum option (not a great test)', function(done) {
+
             var net = new network.Network();
             var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
             var hiddenLayer = new Layers.Layer(Neurons.SigmoidNeuron, 4, Neurons.BiasNeuron, 1);
@@ -743,44 +755,68 @@ describe('Network', function() {
             net.setOutputLayer(outputLayer);
             net.addConnection(ihConnection);
             net.addConnection(hoConnection);
+
+            var initialError = 0, finalError = 0;
+            var initialResults = [];
             
             net.resetLayers();
+            initialResults.push(net.forwardPropogate([0,0]));
+            net.resetLayers();
+            initialResults.push(net.forwardPropogate([0,1]));
+            net.resetLayers();
+            initialResults.push(net.forwardPropogate([1,0]));
+            net.resetLayers();
+            initialResults.push(net.forwardPropogate([1,1]));
             
-            for (var i = 0; i < 1200; i += 1) {
-                net.train([0,0], [0], {momentum: 0.1});
-                net.train([0,1], [0], {momentum: 0.1});
-                net.train([1,0], [0], {momentum: 0.1});
-                net.train([1,1], [1], {momentum: 0.1});
+            console.log('Initial Results:', initialResults);
+            
+            initialError += net.train([0,0], [0], {momentum: 0.1});
+            initialError += net.train([0,1], [0], {momentum: 0.1});
+            initialError += net.train([1,0], [0], {momentum: 0.1});
+            initialError += net.train([1,1], [1], {momentum: 0.1});
+            
+            initialError /= 4;
+            
+            console.log('inital error: ', initialError);
+            
+            for (var i = 0; i < 1300; i += 1) {
+                finalError += net.train([0,0], [0], {momentum: 0.3});
+                finalError += net.train([0,1], [0], {momentum: 0.3});
+                finalError += net.train([1,0], [0], {momentum: 0.3});
+                finalError += net.train([1,1], [1], {momentum: 0.3});
             }
+            
+            finalError /= (1300 * 4);
+            console.log('final error: ', finalError);
             
             net.resetLayers();
             net.forwardPropogate([1,1]);
-            console.log('FINAL: [1,1]=>', net.outputLayer.outputBuffer);
-            console.log(['Expected:[1]'].join(' '));
+            console.log('FINAL: [1,1]=>[1] and got: ', net.outputLayer.outputBuffer);
             expect(net.outputLayer.outputBuffer[0]).to.be.above(0.6);
 
             net.resetLayers();
             net.forwardPropogate([0,0]);
-            console.log('FINAL: [0,0]=>', net.outputLayer.outputBuffer);
-            console.log(['Expected:[0]'].join(' '));
+            console.log('FINAL: [0,0]=>[0] and got: ', net.outputLayer.outputBuffer);
             expect(net.outputLayer.outputBuffer[0]).to.be.below(0.4);
  
             net.resetLayers();
             net.forwardPropogate([0,1]);
-            console.log('FINAL: [0,1]=>', net.outputLayer.outputBuffer);
-            console.log(['Expected:[0]'].join(' '));
+            console.log('FINAL: [0,1]=>[0] and got: ', net.outputLayer.outputBuffer);
             expect(net.outputLayer.outputBuffer[0]).to.be.below(0.4);
   
             net.resetLayers();
             net.forwardPropogate([1,0]);
-            console.log('FINAL: [1,0]=>', net.outputLayer.outputBuffer);
-            console.log(['Expected: [0]'].join(' '));
+            console.log('FINAL: [1,0]=>[0] and got: ', net.outputLayer.outputBuffer);
             expect(net.outputLayer.outputBuffer[0]).to.be.below(0.4);
  
+            expect(finalError).to.be.below(initialError);
+            
             done();
         });
         
-        it('can train with dropout option (not a great test)', function(done) {
+        it('can train AND task with dropout option (not a great test)', function(done) {
+            var initialError, finalError;
+            
             var net = new network.Network();
             var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
             var hiddenLayer = new Layers.Layer(Neurons.SigmoidNeuron, 4, Neurons.BiasNeuron, 1);
@@ -800,47 +836,75 @@ describe('Network', function() {
             net.setOutputLayer(outputLayer);
             net.addConnection(ihConnection);
             net.addConnection(hoConnection);
+
+            var initialResults = [];
             
             net.resetLayers();
+            initialResults.push(net.forwardPropogate([0,0]));
+            net.resetLayers();
+            initialResults.push(net.forwardPropogate([0,1]));
+            net.resetLayers();
+            initialResults.push(net.forwardPropogate([1,0]));
+            net.resetLayers();
+            initialResults.push(net.forwardPropogate([1,1]));
             
-            for (var i = 0; i < 1200; i += 1) {
-                net.train([0,0], [0], {dropout: 0.1});
-                net.train([0,1], [0], {dropout: 0.1});
-                net.train([1,0], [0], {dropout: 0.1});
-                net.train([1,1], [1], {dropout: 0.1});
+            console.log('Initial Results:', initialResults);
+            
+            initialError = 0;
+            initialError += net.train([0,0], [0], {dropout: 0.1});
+            initialError += net.train([0,1], [0], {dropout: 0.1});
+            initialError += net.train([1,0], [0], {dropout: 0.1});
+            initialError += net.train([1,1], [1], {dropout: 0.1});
+            initialError /= 4;
+            
+            console.log('inital error: ', initialError);
+            
+            
+            finalError = 0;
+            
+            for (var i = 0; i < 1300; i += 1) {
+                finalError += net.train([0,0], [0], {dropout: 0.2});
+                finalError += net.train([0,1], [0], {dropout: 0.2});
+                finalError += net.train([1,0], [0], {dropout: 0.2});
+                finalError += net.train([1,1], [1], {dropout: 0.2});
             }
+            
+            finalError /= (1300 * 4);
+            
+            console.log('final error: ', finalError);
             
             net.resetLayers();
             net.forwardPropogate([1,1]);
-            console.log('FINAL: [1,1]=>', net.outputLayer.outputBuffer);
-            console.log(['Expected:[1]'].join(' '));
+            console.log('FINAL: [1,1]=>[1] and got:', net.outputLayer.outputBuffer);
             expect(net.outputLayer.outputBuffer[0]).to.be.above(0.6);
 
             net.resetLayers();
             net.forwardPropogate([0,0]);
-            console.log('FINAL: [0,0]=>', net.outputLayer.outputBuffer);
-            console.log(['Expected:[0]'].join(' '));
+            console.log('FINAL: [0,0]=>[0] and got: ', net.outputLayer.outputBuffer);
             expect(net.outputLayer.outputBuffer[0]).to.be.below(0.4);
  
             net.resetLayers();
             net.forwardPropogate([0,1]);
-            console.log('FINAL: [0,1]=>', net.outputLayer.outputBuffer);
-            console.log(['Expected:[0]'].join(' '));
+            console.log('FINAL: [0,1]=>[0] and got: ', net.outputLayer.outputBuffer);
             expect(net.outputLayer.outputBuffer[0]).to.be.below(0.4);
   
             net.resetLayers();
             net.forwardPropogate([1,0]);
-            console.log('FINAL: [1,0]=>', net.outputLayer.outputBuffer);
-            console.log(['Expected: [0]'].join(' '));
+            console.log('FINAL: [1,0]=>[0] and got: ', net.outputLayer.outputBuffer);
             expect(net.outputLayer.outputBuffer[0]).to.be.below(0.4);
  
+            expect(finalError).to.be.below(initialError);
+            
             done();
         });
         
-        it('can train with larger hidden layer', function(done) {
+        // This test is for fun
+        it('can train XOR task with rectified linear neurons for hidden layer', function(done) {
+            var initialError, finalError;
+            
             var net = new network.Network();
             var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
-            var hiddenLayer = new Layers.Layer(Neurons.SigmoidNeuron, 4, Neurons.BiasNeuron, 1);
+            var hiddenLayer = new Layers.Layer(Neurons.RectifiedLinearNeuron, 10, Neurons.BiasNeuron, 1);
             var outputLayer = new Layers.Layer(Neurons.SigmoidNeuron, 1);
             
             var ihConnection = new Connections.FullConnection(inputLayer, hiddenLayer);
@@ -859,40 +923,51 @@ describe('Network', function() {
             net.addConnection(hoConnection);
             
             net.resetLayers();
+            
+            initialError = 0;
+            initialError += net.train([0,0], [1]);
+            initialError += net.train([0,1], [0]);
+            initialError += net.train([1,0], [0]);
+            initialError += net.train([1,1], [1]);
+            initialError /= 4;
+            
+            finalError = 0;
             
             for (var i = 0; i < 2000; i += 1) {
-                net.train([0,0], [0]);
-                net.train([0,1], [0]);
-                net.train([1,0], [0]);
-                net.train([1,1], [1]);
+                finalError += net.train([0,0], [1]);
+                finalError += net.train([0,1], [0]);
+                finalError += net.train([1,0], [0]);
+                finalError += net.train([1,1], [1]);
             }
+            
+            finalError /= (2000 * 4);
             
             net.resetLayers();
             net.forwardPropogate([1,1]);
-            console.log('FINAL: [1,1]=>', net.outputLayer.outputBuffer);
-            console.log(['Expected:[1]'].join(' '));
+            console.log('FINAL: [1,1]=>[1] and got:', net.outputLayer.outputBuffer);
             expect(net.outputLayer.outputBuffer[0]).to.be.above(0.6);
-
-            net.resetLayers();
-            net.forwardPropogate([0,0]);
-            console.log('FINAL: [0,0]=>', net.outputLayer.outputBuffer);
-            console.log(['Expected:[0]'].join(' '));
-            expect(net.outputLayer.outputBuffer[0]).to.be.below(0.4);
  
             net.resetLayers();
             net.forwardPropogate([0,1]);
-            console.log('FINAL: [0,1]=>', net.outputLayer.outputBuffer);
-            console.log(['Expected:[0]'].join(' '));
+            console.log('FINAL: [0,1]=>[0]', net.outputLayer.outputBuffer);
             expect(net.outputLayer.outputBuffer[0]).to.be.below(0.4);
   
             net.resetLayers();
             net.forwardPropogate([1,0]);
-            console.log('FINAL: [1,0]=>', net.outputLayer.outputBuffer);
-            console.log(['Expected: [0]'].join(' '));
+            console.log('FINAL: [1,0]=>[0]', net.outputLayer.outputBuffer);
             expect(net.outputLayer.outputBuffer[0]).to.be.below(0.4);
+            
+            net.resetLayers();
+            net.forwardPropogate([0,0]);
+            console.log('FINAL: [0,0]=>[1]', net.outputLayer.outputBuffer);
+            expect(net.outputLayer.outputBuffer[0]).to.be.above(0.6);
  
+            expect(finalError).to.be.below(initialError);
+            
             done();
         });
+
+        
     });
     
 
