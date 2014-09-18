@@ -69,19 +69,22 @@ network.resetLayers();
 network.forwardPropogate([1,2,3,4]);
 // returns output of network. example: [1]
 
-// Train network a single step on single data point
-network.train([1,1,1,1], [1]);
-network.train([0,1,1,1], [0]);
+// Train for 1000 epochs
+for (var i = 0; i < 1000; i += 1) {
 
-// Set the step (Default step is 0.21)
-network.train([0,0,1,1], [0], { step: 0.15 });
-
-// Train with momentum (Default momentum is 0.1)
-network.train([0,0,0,1], [0], { momentum: 0.09 });
-
-// Train with dropout (Default dropout probability is 0.2)
-network.train([0,0,0,0], [0], { dropout: 0.5 });
-
+  // Train network a single step on single data point
+  network.train([1,1,1,1], [1]);
+  network.train([0,1,1,1], [0]);
+  
+  // Set the step (Default step is 0.21)
+  network.train([0,0,1,1], [0], { step: 0.15 });
+  
+  // Train with momentum (Default momentum is 0.1)
+  network.train([0,0,0,1], [0], { momentum: 0.09 });
+  
+  // Train with dropout (Default dropout probability is 0.2)
+  network.train([0,0,0,0], [0], { dropout: 0.5 });
+}
 
 
 // TODO
