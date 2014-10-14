@@ -13,14 +13,22 @@
     "url": "https://github.com/EricMok/neuralnetwork0/issues"
   },
   "keywords": [
-      "neural network", "backprop", "brain"
+    "neural network",
+    "backprop",
+    "brain"
   ],
   "scripts": {
-      "test": "mocha ./test",
-      "browserify": "browserify ./lib/browser.js -o ./dist/neuralNet.js"
+    "test": "mocha ./test",
+    "browserify": "browserify ./lib/browser.js -o ./dist/neuralNet.js"
   },
   "devDependencies": {
     "chai": "^1.9.1",
+    "gulp": "^3.8.8",
+    "gulp-browserify": "^0.5.0",
+    "gulp-concat": "^2.4.1",
+    "gulp-header": "^1.1.1",
+    "gulp-rename": "^1.2.0",
+    "gulp-uglify": "^1.0.1",
     "mocha": "^1.21.4"
   }
 }
