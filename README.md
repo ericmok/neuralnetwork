@@ -20,28 +20,29 @@ If extended to a neural network, histories would be saved.
 
 ## Installation
 
-If using Node, then you'd want to require `network.js`.
+If using Node, then you'd want to require `neuralNet.js`.
 
-If you want to use this for your website, you'll want to use browserify to build the node modules.
+Run `npm test` to run mocha/chai tests.
+
+If you want to use this for your website, you'll want to use browserify to build the node modules. There's a gulpfile included
+that will compile it for you. Just run:
 
 ```
-npm install -g browserify
-
-// In the lib folder
-browserify yourFile.js -o network.js
+gulp
 ```
+
 
 ## Usage
 
 ```javascript
-// Example imports... 
-var net = require('./lib/network');
-var NeuralNetwork = net.Network,
-    Layer = net.Layers.Layer,
-    Connections = net.Connections,
-    Neurons = net.Neurons,
-    SigmoidNeuron = Neurons.SigmoidNeuron,
-    FullConnection = Connections.FullConnection; 
+var neuralNet = require('./lib/neuralNet');
+var Network = neuralNet.Network,
+    Layer = neuralNet.Layer,
+    FullConnection = neuralNet.FullConnection,
+    BiasNeuron = neuralNet.BiasNeuron,
+    SigmoidNeuron = neuralNet.SigmoidNeuron,
+    RectifiedLinearNeuron = neuralNet.RectifiedLinearNeuron,
+    IdentityNeuron = neuralNet.IdentityNeuron;
 
 
 var inputLayer = new Layer(IdentityNeuron, 4);
@@ -57,17 +58,28 @@ var outputLayer = new Layer(SigmoidNeuron, 1);
 var ihConnection = new FullConnection(inputLayer, hiddenLayer);
 var hoConnection = new FullConnection(hiddenLayer, outputLayer);
 
-var network = new NeuralNetwork();
 
+var network = new Network();
+
+// Set the input and output layers
 network.setRootLayer(inputLayer);
 network.setOutputLayer(outputLayer);
 
+/* 
+Register the connections between layers. 
+If you have hidden layers those will be explored in 
+a breadth-first fashion starting from the root layer.
+*/
 network.addConnection(ihConnection);
 network.addConnection(hoConnection);
-   
+
+
+// Zero out the parameters
 network.resetLayers();
-network.forwardPropogate([1,2,3,4]);
-// returns output of network. example: [1]
+
+// get output of network for given input. example: [1]
+var output = network.forwardPropogate([1,2,3,4]);
+
 
 // Train for 1000 epochs
 for (var i = 0; i < 1000; i += 1) {
@@ -108,6 +120,7 @@ for (var i = 0; i < 1000; i += 1) {
 
 ```
 
+
 ## Layers
 
 Layers consist of an vector input buffer and vector output buffer of the same dimension.
@@ -128,11 +141,29 @@ When training, layers backpropogate the error by undoing the forward propogation
 
 ### Custom activation functions
 
-##### Not yet implemented
+##### Partially implemented
 
 ```javascript
 
 // Create 10 custom neurons with linear activation functions
+var customNeuronExample = new Layer({
+    forward: function(input) {
+        return input;
+    },
+    backward: function(error) {
+        return error;
+    }
+}, 10);
+```
+
+#### Not implemented yet
+*Design Decision Needed*
+Relevant: Recurrent Neural Network feature
+Should neurons be functional or keep state trajectories and 
+activation histories?
+
+```javascript
+// Design Decision needed
 var customNeuronExample = new Layer({
     forward: function(input, time) {
         return input[time];
@@ -141,7 +172,14 @@ var customNeuronExample = new Layer({
         return error[time];
     }
 }, 10);
+```
 
+
+#### Not implemented yet
+
+Connections can have full access to the input and output buffers.
+
+```javascript
 
 // Full control of input and output buffers of the layer
 // Siblings can interact if you will.
