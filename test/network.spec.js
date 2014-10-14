@@ -6,10 +6,10 @@ var chai = require('chai'),
     should = chai.should(),
     expect = chai.expect;
 
-var network = require('../lib/network'),
-    Neurons = network.Neurons,
-    Connections = network.Connections,
-    Layers = network.Layers;
+var neuralNet = require('../lib/neuralNet'),
+    Neurons = neuralNet.Neurons,
+    Connections = neuralNet.Connections,
+    Layers = neuralNet.Layers;
 
 describe('Test', function() {
     it('works', function(done) {
@@ -17,10 +17,9 @@ describe('Test', function() {
         done();
     });
     it('can load modules', function(done) {
-        expect(network.Layer).to.be.undefined;
-        expect(network.Layers).to.not.be.undefined;
-        expect(network.Neurons).to.not.be.undefined;
-        expect(network.Connections).to.not.be.undefined;
+        expect(neuralNet.Neurons).to.not.be.undefined;
+        expect(neuralNet.Connections).to.not.be.undefined;
+        expect(neuralNet.Layers).to.not.be.undefined;
         done();
     });
 });
@@ -30,7 +29,7 @@ describe('Network', function() {
     describe('Structure', function() {
 
         describe('can set root layer and output layer', function() {        
-            var net = new network.Network();
+            var net = new neuralNet.Network();
             var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
             var hiddenLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
             var outputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
@@ -48,7 +47,7 @@ describe('Network', function() {
         });
         
         describe('Layer hash', function() {
-            var net = new network.Network();
+            var net = new neuralNet.Network();
             var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
             var hiddenLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
             var outputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
@@ -72,7 +71,7 @@ describe('Network', function() {
             });
             
             it('updates when connections are added', function(done) {
-                var net = new network.Network();
+                var net = new neuralNet.Network();
                 var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
                 var hiddenLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
                 var outputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
@@ -89,7 +88,7 @@ describe('Network', function() {
         });
 
         it('can add connection', function(done) {
-            var net = new network.Network();
+            var net = new neuralNet.Network();
             var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
             var hiddenLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
             var outputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
@@ -118,7 +117,7 @@ describe('Network', function() {
     });
 
     describe('Network Propogation', function() {
-        var net = new network.Network();
+        var net = new neuralNet.Network();
         var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
         var hiddenLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
         var outputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
@@ -262,8 +261,8 @@ describe('Network', function() {
         
                 
         it('can meanSquaredError', function(done) {
-            expect(network.meanSquaredError([-2,3])).to.be.equal((4 + 9) / 2);
-            expect(network.meanSquaredError([1,1])).to.be.equal(1);
+            expect(neuralNet.meanSquaredError([-2,3])).to.be.equal((4 + 9) / 2);
+            expect(neuralNet.meanSquaredError([1,1])).to.be.equal(1);
             
             done();
         });
@@ -299,7 +298,7 @@ describe('Network', function() {
         
         it('can train AND task with momentum option (not a great test)', function(done) {
 
-            var net = new network.Network();
+            var net = new neuralNet.Network();
             var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
             var hiddenLayer = new Layers.Layer(Neurons.SigmoidNeuron, 4, Neurons.BiasNeuron, 1);
             var outputLayer = new Layers.Layer(Neurons.SigmoidNeuron, 1);
@@ -380,7 +379,7 @@ describe('Network', function() {
         it('can train AND task with dropout option (not a great test)', function(done) {
             var initialError, finalError;
             
-            var net = new network.Network();
+            var net = new neuralNet.Network();
             var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
             var hiddenLayer = new Layers.Layer(Neurons.SigmoidNeuron, 4, Neurons.BiasNeuron, 1);
             var outputLayer = new Layers.Layer(Neurons.SigmoidNeuron, 1);
@@ -465,7 +464,7 @@ describe('Network', function() {
         it('can train XOR task with rectified linear neurons for hidden layer', function(done) {
             var initialError, finalError;
             
-            var net = new network.Network();
+            var net = new neuralNet.Network();
             var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
             var hiddenLayer = new Layers.Layer(Neurons.RectifiedLinearNeuron, 10, Neurons.BiasNeuron, 1);
             var outputLayer = new Layers.Layer(Neurons.SigmoidNeuron, 1);
