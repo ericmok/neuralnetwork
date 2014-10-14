@@ -17,7 +17,7 @@
   ],
   "scripts": {
       "test": "mocha ./test",
-      "start": "browserify ./lib/network.js -o ./neuralnetwork.js"
+      "start": "browserify ./lib/browser.js -o ./dist/neuralNet.js"
   },
   "devDependencies": {
     "chai": "^1.9.1",
