@@ -156,7 +156,7 @@ var customNeuronExample = new Layer({
 }, 10);
 ```
 
-#### Not implemented yet
+##### Not implemented yet
 *Design Decision Needed*
 Relevant: Recurrent Neural Network feature
 Should neurons be functional or keep state trajectories and 
@@ -175,7 +175,7 @@ var customNeuronExample = new Layer({
 ```
 
 
-#### Not implemented yet
+##### Not implemented yet
 
 Connections can have full access to the input and output buffers.
 
