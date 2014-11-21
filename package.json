@@ -2,7 +2,7 @@
   "name": "neuralnetwork0",
   "version": "0.0.1",
   "description": "Rudimentary Neural Network",
-  "main": "./lib/neuralNet.js",
+  "main": "lib/neuralNet.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/EricMok/neuralnetwork0.git"

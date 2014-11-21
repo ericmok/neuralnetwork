@@ -20,7 +20,7 @@ If extended to a neural network, histories would be saved.
 
 ## Installation
 
-If using Node, then you'd want to require `neuralNet.js`.
+If using Node, then you'd want to require `nn.js`.
 
 Run `npm test` to run mocha/chai tests.
 
@@ -35,20 +35,20 @@ gulp
 ## Usage
 
 ```javascript
-var neuralNet = require('./lib/neuralNet');
-var Network = neuralNet.Network,
-    Layer = neuralNet.Layer,
-    FullConnection = neuralNet.FullConnection,
-    BiasNeuron = neuralNet.BiasNeuron,
-    SigmoidNeuron = neuralNet.SigmoidNeuron,
-    RectifiedLinearNeuron = neuralNet.RectifiedLinearNeuron,
-    IdentityNeuron = neuralNet.IdentityNeuron;
+var nn = require('neuralnetwork0');
+var Network = nn.Network,
+    Layer = nn.Layer,
+    FullConnection = nn.FullConnection,
+    BiasNeuron = nn.BiasNeuron,
+    SigmoidNeuron = nn.SigmoidNeuron,
+    RectifiedLinearNeuron = nn.RectifiedLinearNeuron,
+    IdentityNeuron = nn.IdentityNeuron;
 
 
 var inputLayer = new Layer(IdentityNeuron, 4);
 // Layer of [ <IdentityNeuron> x 4 ]
 
-var hiddenLayer = new Layer(SigmoidNeuron, 16, RectifiedLinearNeuron, 16, BiasNeuron, 1); 
+var hiddenLayer = new Layer(SigmoidNeuron, 16, RectifiedLinearNeuron, 16, BiasNeuron, 1);
 // Layer of [ <SigmoidNeuron> x 16, <RectifiedLinearNeuron> x 16, <BiasNeuron> ]
 
 var outputLayer = new Layer(SigmoidNeuron, 1);
@@ -65,9 +65,9 @@ var network = new Network();
 network.setRootLayer(inputLayer);
 network.setOutputLayer(outputLayer);
 
-/* 
-Register the connections between layers. 
-If you have hidden layers those will be explored in 
+/*
+Register the connections between layers.
+If you have hidden layers those will be explored in
 a breadth-first fashion starting from the root layer.
 */
 network.addConnection(ihConnection);
@@ -87,13 +87,13 @@ for (var i = 0; i < 1000; i += 1) {
   // Train network a single step on single data point
   network.train([1,1,1,1], [1]);
   network.train([0,1,1,1], [0]);
-  
+
   // Set the step (Default step is 0.21)
   network.train([0,0,1,1], [0], { step: 0.15 });
-  
+
   // Train with momentum (Default momentum is 0.1)
   network.train([0,0,0,1], [0], { momentum: 0.09 });
-  
+
   // Train with dropout (Default dropout probability is 0.2)
   network.train([0,0,0,0], [0], { dropout: 0.5 });
 }
@@ -112,7 +112,7 @@ for (var i = 0; i < 1000; i += 1) {
 // Train the network for 1000 epochs using backprop
 //network.train( [ { in: [1,2,3,4,1], out: [1],
 //                   in: [0,0,0,0,1], out: [0.1], // etc.
-//                } ], 1000 ); 
+//                } ], 1000 );
 
 // TODO
 //ihConnection.parameters();
@@ -132,7 +132,7 @@ Using `GeneralLayer` will expose access to the underlying buffer allowing for mo
 within the layer can influence each other.) However, whether you use `GeneralLayer` or `Layer`, the input and output
 of the transformation will have to have the same dimensions.
 
-If you desire that the input buffer and output buffer not be the same dimension, 
+If you desire that the input buffer and output buffer not be the same dimension,
 use a connection between a larger layer and a smaller identity layer instead.
 
 Layers contain the activation function for transferring values in the input buffer to the output buffer when forward propogating.
@@ -140,8 +140,6 @@ When training, layers backpropogate the error by undoing the forward propogation
 
 
 ### Custom activation functions
-
-##### Partially implemented
 
 ```javascript
 
@@ -159,7 +157,7 @@ var customNeuronExample = new Layer({
 ##### Not implemented yet
 *Design Decision Needed*
 Relevant: Recurrent Neural Network feature
-Should neurons be functional or keep state trajectories and 
+Should neurons be functional or keep state trajectories and
 activation histories?
 
 ```javascript
@@ -191,13 +189,13 @@ var generalLayerExample = new GeneralLayer(function() {
         var s = sigmoid(x);
         return s * (1 - s);
     }
-    
+
     this.forward = function(inputBuffer, outputBuffer, time) {
         outputBuffer.map(function(el, index) {
             return sigmoid( inputBuffer[index] );
         });
     };
-    
+
     this.backward = function(inputBuffer, outputBuffer, inputError, outputError, time) {
         inputError.map(function(inErr, index) {
             return outputBuffer[index] * (1.0 - outputBuffer[index]) * outputError[index];
@@ -209,7 +207,7 @@ var generalLayerExample = new GeneralLayer(function() {
 
 ## Connections
 
-Technically more general than layers. They allow many to many relationships as opposed to `Layer`'s one to one relationship.
+Whereas layers map values, connections combine values.
 
 ##### Not yet implemented
 
@@ -223,7 +221,7 @@ function ExampleConnection = Connection.create({
     backward: function(params, inputError, outputError) {
         inputError = dotProduct( transpose(params), outputError );
     }, train: function(params, inputError, outputError) {
-        
+
     }
 });
 
@@ -231,5 +229,3 @@ network.addConnection(ExampleConnection, inputLayer, hiddenLayer);
 network.addConnection(ExampleConnection, hiddenLayer, outputLayer);
 
 ```
-
-
