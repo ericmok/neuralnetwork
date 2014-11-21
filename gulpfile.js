@@ -13,14 +13,14 @@ gulp.task('browserify', function() {
         pipe(browserify({
         })).
         pipe(rename(function(path) {
-            path.basename = 'neuralNet';
+            path.basename = 'neuralnetwork0';
         })).
         pipe(header(
             '/**' + fs.readFileSync('./LICENSE', 'utf8') + '*/\n\n'
         )).
         pipe(gulp.dest('./dist')).
         pipe(rename(function(path) {
-            path.basename = 'neuralNet.min';
+            path.basename = 'neuralnetwork0.min';
         })).
         pipe(uglify()).
         pipe(header(

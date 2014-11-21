@@ -6,7 +6,7 @@ var chai = require('chai'),
     should = chai.should(),
     expect = chai.expect;
 
-var neuralNet = require('../lib/neuralNet'),
+var neuralNet = require('../lib/main'),
     Neurons = neuralNet.Neurons,
     Connections = neuralNet.Connections,
     Layers = neuralNet.Layers;
@@ -36,16 +36,16 @@ describe('Neurons', function() {
         it('Sigmoid Neuron works', function() {
             var n = new Neurons.SigmoidNeuron();
             var result = n.forward(2);
-            
+
             expect(result).to.equal(1.0 / (1.0 + Math.exp(-2)));
-            
+
             var backResult = n.backward(2, result); // args: err, output
             expect(backResult).to.equal(result * (1 - result) * 2);
         });
         it('RectifiedLinear Neuron works', function() {
             expect((new Neurons.RectifiedLinearNeuron()).forward(2)).to.equal(2);
             expect((new Neurons.RectifiedLinearNeuron()).forward(-1)).to.equal(0);
-            
+
             expect((new Neurons.RectifiedLinearNeuron()).backward(2, 1)).to.equal(2);
             expect((new Neurons.RectifiedLinearNeuron()).backward(2, -1)).to.equal(0);
         });

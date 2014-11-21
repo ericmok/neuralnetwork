@@ -2,7 +2,7 @@
   "name": "neuralnetwork0",
   "version": "0.0.1",
   "description": "Rudimentary Neural Network",
-  "main": "lib/neuralNet.js",
+  "main": "lib/main.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/EricMok/neuralnetwork0.git"
@@ -19,7 +19,7 @@
   ],
   "scripts": {
     "test": "mocha ./test",
-    "browserify": "browserify ./lib/browser.js -o ./dist/neuralNet.js"
+    "browserify": "browserify ./lib/browser.js -o ./dist/neuralnetwork0.js"
   },
   "devDependencies": {
     "chai": "^1.9.1",
