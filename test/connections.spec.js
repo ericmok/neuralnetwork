@@ -7,9 +7,9 @@ var chai = require('chai'),
     expect = chai.expect;
 
 var neuralNet = require('../lib/main'),
-    Neurons = neuralNet.Neurons,
-    Connections = neuralNet.Connections,
-    Layers = neuralNet.Layers;
+    Neurons = neuralNet.neurons,
+    Connections = neuralNet.connections,
+    Layers = neuralNet.layers;
 
 describe('Test', function() {
     it('works', function(done) {
@@ -17,9 +17,9 @@ describe('Test', function() {
         done();
     });
     it('can load modules', function(done) {
-        expect(neuralNet.Neurons).to.not.be.undefined;
-        expect(neuralNet.Connections).to.not.be.undefined;
-        expect(neuralNet.Layers).to.not.be.undefined;
+        expect(neuralNet.neurons).to.not.be.undefined;
+        expect(neuralNet.connections).to.not.be.undefined;
+        expect(neuralNet.layers).to.not.be.undefined;
         done();
     });
 });
