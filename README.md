@@ -19,12 +19,11 @@ If extended to a neural network, histories would be saved.
 
 
 ## Installation
+This is not registered on npm yet :)
 
-If using Node, then you'd want to require `nn.js`.
+Run `npm test` or `mocha` to enjoy mocha/chai tests.
 
-Run `npm test` to run mocha/chai tests.
-
-If you want to use this for your website, you'll want to use browserify to build the node modules. There's a gulpfile included
+If you want to use this in the browser, you'll want to use browserify to build the node modules. There's a gulpfile included
 that will compile it for you. Just run:
 
 ```
