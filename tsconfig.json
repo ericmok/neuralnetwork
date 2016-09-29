@@ -1,0 +1,13 @@
+{
+  "files": [
+    "main.ts",
+    "lib/*.ts",
+    "test/*.ts"
+  ],
+  "compileOnSave": false,
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "target": "es5",
+    "module": "commonjs"
+  }
+}
