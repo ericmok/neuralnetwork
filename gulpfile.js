@@ -49,7 +49,7 @@ gulp.task('build', function() {
         .pipe(debug({title: 'files'}))
         .pipe(tsProject()).pipe(gulp.dest('./build'));
 
-        exec('npm run mocha', function(err, stdout, stderr) {
+        exec('npm run mocha "build/test/*.js"', function(err, stdout, stderr) {
             console.log(stdout);
             console.log(stderr);
         });
