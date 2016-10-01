@@ -3,14 +3,28 @@
 import {dotProduct, vectorSum, matrixVectorMultiplication, transpose, zero, outerProduct} from './utils.ts';
 import {Layer} from './layers.ts';
 
-/**
-* Connects 2 layers together. Contains the parameters of the network
-*/
-export class FullConnection {
+export interface Connection {
     parameters: Array<number>;
     derivatives: Array<number>;
     inputLayer: Layer;
     outputLayer: Layer;
+    _lastStep: Array<number>;
+
+    resetParameters(val: number): void;
+    resetDerivatives(): void;
+    forward(): void;
+    backward(): void;
+}
+
+/**
+* Connects 2 layers together. Contains the parameters of the network
+*/
+export class FullConnection implements Connection{
+    parameters: Array<number>;
+    derivatives: Array<number>;
+    inputLayer: Layer;
+    outputLayer: Layer;
+    _lastStep: Array<number>;
 
     constructor(inputLayer: Layer, outputLayer: Layer) {
         this.parameters = [];

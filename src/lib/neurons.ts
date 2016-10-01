@@ -3,7 +3,7 @@
 
 export interface N {
     forward(input: number): number,
-    backward(error: number): number
+    backward(error: number, output?: number) : number
 }
 
 /**
@@ -21,7 +21,7 @@ export class Neuron implements N {
       return input;
     }
 
-    backward(error: number) : number {
+    backward(error: number, ouput?: number) : number {
       return error;
     }
 }

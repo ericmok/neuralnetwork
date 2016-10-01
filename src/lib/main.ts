@@ -2,6 +2,7 @@
 This lets browserify squash everything into a single file
 with easy access to frequently used dependencies.
 */
+function require(a: string) : any {}
 
 module.exports = {
     'network': require('./network'),

@@ -44,7 +44,6 @@ export class Layer {
     inputError: Array<number>;
     outputError: Array<number>;
 
-
     constructor(args : Array<LayerDefinition>) {
         this.name = Math.random().toString(36).substring(2);
 
