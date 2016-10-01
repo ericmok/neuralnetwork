@@ -1,11 +1,16 @@
 
 //var key; // Temp variable for copying keys in a loop
 
+export interface N {
+    forward(input: number): number,
+    backward(error: number): number
+}
+
 /**
 * Neural models for layers.
 * Should contain a name and both forward and backward interfaces
 */
-export class Neuron {
+export class Neuron implements N {
     name: string;
 
     constructor() {
@@ -26,11 +31,11 @@ export class IdentityNeuron extends Neuron {}
 
 
 export class BiasNeuron extends Neuron {
-    forward(): number {
+    forward(input: number | null): number {
         return 1;
     }
 
-    backward(): number {
+    backward(error: number | null): number {
       return 0;
     }
 }

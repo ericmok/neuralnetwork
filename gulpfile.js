@@ -1,5 +1,8 @@
 var fs = require('fs'),
     gulp = require('gulp'),
+    debug = require('gulp-debug'),
+    cache = require('gulp-cached'),
+    exec = require('child_process').exec,
     rename = require('gulp-rename'),
     browserify = require('gulp-browserify'),
     header = require('gulp-header'),
@@ -39,13 +42,21 @@ gulp.task('browserify', function() {
 //         pipe(gulp.dest('./dist'))
 // });
 
-gulp.task('type', function() {
-    var tsResult = gulp.src('*.ts')
-    .pipe(tsProject());
+gulp.task('build', function() {
+    console.log('Performing incremental build...');
+
+    var tsResult = tsProject.src().pipe(cache('build'))
+        .pipe(debug({title: 'files'}))
+        .pipe(tsProject()).pipe(gulp.dest('./build'));
+
+        exec('npm run mocha', function(err, stdout, stderr) {
+            console.log(stdout);
+            console.log(stderr);
+        });
 });
 
-gulp.task('typetest', function() {
-    gulp.watch('**/*.ts', ['type']);
+gulp.task('watch', function() {
+    gulp.watch('**/*.ts', ['build']);
 });
 
-gulp.task('default', ['browserify']);
+gulp.task('default', ['build']);

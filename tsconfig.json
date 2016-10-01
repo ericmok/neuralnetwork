@@ -1,8 +1,8 @@
 {
-  "files": [
-    "main.ts",
+  "include": [
+    "index.ts",
     "lib/*.ts",
-    "test/*.ts"
+    "test/*.spec.ts"
   ],
   "compileOnSave": false,
   "compilerOptions": {
