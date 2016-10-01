@@ -1,3 +1,5 @@
+/// <reference path="../../typings/index.d.ts" />
+
 /*global require, describe, expect, assert, it*/
 'use strict';
 
