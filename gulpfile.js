@@ -48,15 +48,23 @@ gulp.task('build', function() {
     var tsResult = tsProject.src().pipe(cache('build'))
         .pipe(debug({title: 'files'}))
         .pipe(tsProject()).pipe(gulp.dest('./build'));
+});
 
-        exec('npm run mocha "build/test/*.js"', function(err, stdout, stderr) {
+gulp.task('test', function() {
+    //var spawnSync = require("child_process").spawnSync;
+    //spawnSync('npm', ['run', 'mocha', 'build/test/neurons.spec.js', '--colors'], { stdio: "inherit" });
+    exec('npm run mocha "build/test/neurons.spec.js"', (err, stdout, stderr) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
             console.log(stdout);
-            console.log(stderr);
-        });
+        }
+    );
 });
 
 gulp.task('watch', function() {
-    gulp.watch('**/*.ts', ['build']);
+    gulp.watch('**/*.ts', ['build', 'test']);
 });
 
 gulp.task('default', ['build']);
