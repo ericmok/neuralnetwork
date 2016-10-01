@@ -15,7 +15,7 @@ console.log(fs.readFileSync('./LICENSE', 'utf8'));
 var tsProject = ts.createProject('tsconfig.json');
 
 gulp.task('browserify', function() {
-    var tsResult = gulp.src('*.ts')
+    var tsResult = gulp.src('**/*.ts')
       .pipe(tsProject())
       .js.pipe(browserify({
         })).
