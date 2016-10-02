@@ -1,11 +1,7 @@
 Neural Network
 ==============
 
-A rudimentary javascript implementation of neural networks based on PyBrain.
-
-A little less fancy for the imagination as the network is rigidly organized into layers and connections
-and transfer signals instantaneously.
-
+A rudimentary Typescript implementation of feed forward neural networks based on PyBrain.
 
 ![Architecture](https://github.com/EricMok/neuralnetwork0/blob/master/architecture.png)
 
