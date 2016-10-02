@@ -67,4 +67,4 @@ gulp.task('watch', function() {
     gulp.watch('**/*.ts', ['build', 'test']);
 });
 
-gulp.task('default', ['build']);
+gulp.task('default', ['build', 'test']);
