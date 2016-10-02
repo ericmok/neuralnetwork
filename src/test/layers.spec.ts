@@ -101,15 +101,15 @@ describe('Layers', function() {
 
         it('each layer has a different name', function(done) {
 
-            var lookup: {[name: string]: number } = {};
+            var lookup: Set<string> = new Set<string>();
             var test: Layer;
 
             for (let i = 0; i < 3; i++) {
                 test = new Layer([{kind: TestNeuron, amount: 5}, {kind: neurons.BiasNeuron, amount: 2}]);
 
                 expect(test.name.length).to.be.above(2);
-                expect(lookup[test.name]).to.be.undefined;
-                lookup[test.name] = 1;
+                expect(lookup.has(test.name)).to.be.false;
+                lookup.add(test.name);
             }
 
             done();
@@ -117,7 +117,7 @@ describe('Layers', function() {
 
         it('each neuron has a different name', function(done) {
 
-            var lookup: {[name: string]: number} = {};
+            var lookup: Set<string> = new Set<string>();
 
             var test = new Layer([{
                 kind: TestNeuron,
@@ -130,8 +130,8 @@ describe('Layers', function() {
 
             // Cute uniqueness test! :D
             test.neurons.forEach(function(n) {
-                expect(lookup[n.name]).to.be.undefined;
-                lookup[n.name] = 1;
+                expect(lookup.has(n.name)).to.be.false;
+                lookup.add(n.name);
             });
 
             done();
