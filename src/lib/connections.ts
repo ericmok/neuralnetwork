@@ -39,7 +39,7 @@ export class FullConnection implements Connection{
         this.outputLayer = outputLayer;
     }
 
-    resetParameters(val: number) {
+    resetParameters(val?: number) {
         this.parameters = this.parameters.map((el) => {
             return val || 0;
         });

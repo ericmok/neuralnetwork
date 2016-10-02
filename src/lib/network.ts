@@ -58,7 +58,7 @@ export class Network {
         }
     }
 
-    forwardPropogate(input: Array<number>) {
+    forwardPropogate(input: Array<number>): Array<number> {
         var self = this,
             currentLayer: Layer = null,
             connections: Array<Connection> = null,
@@ -184,7 +184,7 @@ export class Network {
         }
     }
 
-    train(input: Array<number>, targetVector: Array<number>, options: any) {
+    train(input: Array<number>, targetVector: Array<number>, options?: any) {
         if (input.length !== this.rootLayer.inputBuffer.length) {
             throw new Error('Wrong input dimensions');
         }

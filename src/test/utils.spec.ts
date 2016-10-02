@@ -2,13 +2,12 @@
 /*global require, describe, expect, assert, it*/
 'use strict';
 
-var chai = require('chai'),
-    assert = chai.assert,
+import * as chai from 'chai';
+var assert = chai.assert,
     should = chai.should(),
     expect = chai.expect;
 
-var utils = require('../lib/utils');
-
+import * as utils from '../lib/utils.ts';
 
 describe('Test', function() {
     it('works', function(done) {

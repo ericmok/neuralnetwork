@@ -41,7 +41,7 @@ export class BiasNeuron extends Neuron {
 }
 
 
-export class SigmoidNeuron {
+export class SigmoidNeuron extends Neuron {
     forward(input: number): number {
         return 1.0 / (1.0 + Math.exp(-input));
     }
@@ -53,7 +53,7 @@ export class SigmoidNeuron {
 }
 
 
-export class RectifiedLinearNeuron {
+export class RectifiedLinearNeuron extends Neuron {
     forward(input: number): number {
         return Math.max(0, input);
     }
