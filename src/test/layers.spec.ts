@@ -122,7 +122,7 @@ describe('Layers', function() {
 
         it('each neuron has a different name', function(done) {
 
-            var lookup = {};
+            var lookup: {[name: string]: number} = {};
 
             var test = new Layer([{
                 kind: TestNeuron,

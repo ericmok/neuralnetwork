@@ -11,16 +11,16 @@ export function meanSquaredError(errors: Array<number>): number {
 }
 
 export class Network {
-    layers: Map<string, Layer>;
-    forwardConnections: Map<string, Array<Connection>>;
-    backwardConnections: Map<string, Array<Connection>>;
+    layers: {[name: string]: Layer}; //Map<string, Layer>;
+    forwardConnections: {[name: string]: Array<Connection>}; //Map<string, Array<Connection>>;
+    backwardConnections: {[name: string]: Array<Connection>}; //Map<string, Array<Connection>>;
     rootLayer: Layer | null;
     outputLayer: Layer | null;
 
     constructor() {
-        this.layers = new Map<string, Layer>();
-        this.forwardConnections = new Map<string, Array<Connection>>();
-        this.backwardConnections = new Map<string, Array<Connection>>();
+        this.layers = {}; //new Map<string, Layer>();
+        this.forwardConnections = {}; //new Map<string, Array<Connection>>();
+        this.backwardConnections = {}; //new Map<string, Array<Connection>>();
         this.rootLayer = null;
         this.outputLayer = null;
     }
