@@ -21,6 +21,7 @@
     "tsc": "tsc",
     "typings": "typings",
     "gulp": "gulp",
+    "build": "gulp build",
     "test": "mocha --require source-map-support/register 'build/test/**/*.spec.js'",
     "watch": "gulp watch"
   },
