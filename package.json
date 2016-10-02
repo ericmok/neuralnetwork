@@ -1,34 +1,47 @@
 {
-  "name": "neuralnetwork0",
-  "version": "0.0.1",
-  "description": "Rudimentary Neural Network",
-  "main": "lib/main.js",
+  "name": "neuralnetwork",
+  "version": "2.0.0",
+  "description": "Rudimentary Neural Network in Typescript",
+  "main": "build/lib/index.js",
+  "typings": "src/lib/index",
   "repository": {
     "type": "git",
-    "url": "https://github.com/EricMok/neuralnetwork0.git"
+    "url": "https://github.com/EricMok/neuralnetwork.git"
   },
   "author": "Eric M",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/EricMok/neuralnetwork0/issues"
+    "url": "https://github.com/EricMok/neuralnetwork/issues"
   },
   "keywords": [
     "neural network",
     "backprop",
+    "typescript",
     "brain"
   ],
   "scripts": {
-    "test": "mocha ./test",
-    "browserify": "browserify ./lib/browser.js -o ./dist/neuralnetwork0.js"
+    "tsc": "tsc",
+    "typings": "typings",
+    "gulp": "gulp",
+    "build": "gulp build",
+    "test": "mocha --require source-map-support/register 'build/test/**/*.spec.js'",
+    "watch": "gulp watch",
+    "prepublish": "npm run build"
   },
   "devDependencies": {
-    "chai": "^1.9.1",
-    "gulp": "^3.8.8",
+    "chai": "^3.5.0",
+    "gulp": "^3.9.1",
     "gulp-browserify": "^0.5.0",
+    "gulp-cached": "^1.1.0",
     "gulp-concat": "^2.4.1",
+    "gulp-debug": "^2.1.2",
     "gulp-header": "^1.1.1",
     "gulp-rename": "^1.2.0",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-typescript": "^3.0.1",
     "gulp-uglify": "^1.0.1",
-    "mocha": "^1.21.4"
+    "mocha": "^3.1.0",
+    "typescript": "^2.0.3",
+    "typings": "^1.4.0"
   }
 }

@@ -1,25 +1,17 @@
+/// <reference path="../../typings/index.d.ts" />
 /*global require, describe, expect, assert, it*/
-'use strict';
 
-var chai = require('chai'),
-    assert = chai.assert,
-    should = chai.should(),
-    expect = chai.expect;
+import * as chai from 'chai';
 
-var neuralNet = require('../lib/main'),
-    Neurons = neuralNet.neurons,
-    Connections = neuralNet.connections,
-    Layers = neuralNet.layers;
+var assert = chai.assert;
+var should = chai.should();
+var expect = chai.expect;
+
+import * as Neurons from '../lib/neurons';
 
 describe('Test', function() {
     it('works', function(done) {
         assert.equal(true, true);
-        done();
-    });
-    it('can load modules', function(done) {
-        expect(neuralNet.neurons).to.not.be.undefined;
-        expect(neuralNet.connections).to.not.be.undefined;
-        expect(neuralNet.layers).to.not.be.undefined;
         done();
     });
 });
@@ -31,7 +23,8 @@ describe('Neurons', function() {
             expect((new Neurons.IdentityNeuron()).forward(5)).to.equal(5);
         });
         it('Bias Neuron works', function() {
-            expect((new Neurons.BiasNeuron()).forward(12)).to.equal(1);
+            var biasNeuron = new Neurons.BiasNeuron();
+            expect(biasNeuron.forward(12)).to.equal(1);
         });
         it('Sigmoid Neuron works', function() {
             var n = new Neurons.SigmoidNeuron();

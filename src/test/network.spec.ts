@@ -1,15 +1,18 @@
+/// <reference path="../../typings/index.d.ts" />
 /*global require, describe, expect, assert, it*/
-'use strict';
 
-var chai = require('chai'),
-    assert = chai.assert,
+import * as chai from  'chai';
+
+var assert = chai.assert,
     should = chai.should(),
     expect = chai.expect;
 
-var neuralNet = require('../lib/main'),
-    Neurons = neuralNet.neurons,
-    Connections = neuralNet.connections,
-    Layers = neuralNet.layers;
+import * as neuralNet from '../lib/index';
+
+import * as neurons from '../lib/neurons';
+import {Layer} from '../lib/layers';
+import {Connection, FullConnection} from '../lib/connections';
+import {meanSquaredError, Network} from '../lib/network';
 
 describe('Test', function() {
     it('works', function(done) {
@@ -29,10 +32,10 @@ describe('Network', function() {
     describe('Structure', function() {
 
         describe('can set root layer and output layer', function() {
-            var net = new neuralNet.Network();
-            var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
-            var hiddenLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
-            var outputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+            var net = new Network();
+            var inputLayer = new Layer([{kind: neurons.IdentityNeuron, amount: 2}]);
+            var hiddenLayer = new Layer([{kind: neurons.IdentityNeuron, amount: 2}]);
+            var outputLayer = new Layer([{kind: neurons.IdentityNeuron, amount: 2}]);
 
             it('can set root and output layer', function(done) {
                 net.setRootLayer(inputLayer);
@@ -47,10 +50,10 @@ describe('Network', function() {
         });
 
         describe('Layer hash', function() {
-            var net = new neuralNet.Network();
-            var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
-            var hiddenLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
-            var outputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+            var net = new Network();
+            var inputLayer = new Layer([{kind: neurons.IdentityNeuron, amount: 2}]);
+            var hiddenLayer = new Layer([{kind: neurons.IdentityNeuron, amount: 2}]);
+            var outputLayer = new Layer([{kind: neurons.IdentityNeuron, amount: 2}]);
 
 
             it('updates when input and output layer are set', function(done) {
@@ -71,13 +74,13 @@ describe('Network', function() {
             });
 
             it('updates when connections are added', function(done) {
-                var net = new neuralNet.Network();
-                var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
-                var hiddenLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
-                var outputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+                var net = new Network();
+                var inputLayer = new Layer([{kind: neurons.IdentityNeuron, amount: 2}]);
+                var hiddenLayer = new Layer([{kind: neurons.IdentityNeuron, amount: 2}]);
+                var outputLayer = new Layer([{kind: neurons.IdentityNeuron, amount: 2}]);
 
                 var currentNumberLayers = Object.keys(net.layers).length;
-                var con = new Connections.FullConnection(inputLayer, hiddenLayer);
+                var con = new FullConnection(inputLayer, hiddenLayer);
 
                 net.addConnection(con);
 
@@ -88,13 +91,13 @@ describe('Network', function() {
         });
 
         it('can add connection', function(done) {
-            var net = new neuralNet.Network();
-            var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
-            var hiddenLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
-            var outputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+            var net = new Network();
+            var inputLayer = new Layer([{kind: neurons.IdentityNeuron, amount: 2}]);
+            var hiddenLayer = new Layer([{kind: neurons.IdentityNeuron, amount: 2}]);
+            var outputLayer = new Layer([{kind: neurons.IdentityNeuron, amount: 2}]);
 
-            var ihConnection = new Connections.FullConnection(inputLayer, hiddenLayer);
-            var hoConnection = new Connections.FullConnection(hiddenLayer, outputLayer);
+            var ihConnection = new FullConnection(inputLayer, hiddenLayer);
+            var hoConnection = new FullConnection(hiddenLayer, outputLayer);
 
             ihConnection.resetParameters(1);
             hoConnection.resetParameters(1);
@@ -117,13 +120,13 @@ describe('Network', function() {
     });
 
     describe('Network Propogation', function() {
-        var net = new neuralNet.Network();
-        var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
-        var hiddenLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
-        var outputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
+        var net = new Network();
+        var inputLayer = new Layer([{kind: neurons.IdentityNeuron, amount: 2}]);
+        var hiddenLayer = new Layer([{kind: neurons.IdentityNeuron, amount: 2}]);
+        var outputLayer = new Layer([{kind: neurons.IdentityNeuron, amount: 2}]);
 
-        var ihConnection = new Connections.FullConnection(inputLayer, hiddenLayer);
-        var hoConnection = new Connections.FullConnection(hiddenLayer, outputLayer);
+        var ihConnection = new FullConnection(inputLayer, hiddenLayer);
+        var hoConnection = new FullConnection(hiddenLayer, outputLayer);
 
         ihConnection.resetParameters(1);
         hoConnection.resetParameters(1);
@@ -248,7 +251,7 @@ describe('Network', function() {
         it('can loop through connections', function(done) {
             var counter = 0;
 
-            net.forEachConnection(function(con) {
+            net.forEachConnection(function(con: Connection) {
                 counter += 1;
                 expect(con.inputLayer).to.not.be.undefined;
                 expect(con.outputLayer).to.not.be.undefined;
@@ -261,14 +264,14 @@ describe('Network', function() {
 
 
         it('can meanSquaredError', function(done) {
-            expect(neuralNet.meanSquaredError([-2,3])).to.be.equal((4 + 9) / 2);
-            expect(neuralNet.meanSquaredError([1,1])).to.be.equal(1);
+            expect(meanSquaredError([-2,3])).to.be.equal((4 + 9) / 2);
+            expect(meanSquaredError([1,1])).to.be.equal(1);
 
             done();
         });
 
         it('can train', function(done) {
-            var i, initialError, finalError;
+            var initialError: number, finalError: number;
 
             ihConnection.parameters = ihConnection.parameters.map(function(el) {
                 return Math.random();
@@ -278,7 +281,7 @@ describe('Network', function() {
             });
 
             initialError = net.train([1,1], [-1,1]);
-            for (i = 0; i < 100; i += 1) {
+            for (let i = 0; i < 100; i += 1) {
                 net.resetLayers();
                 finalError = net.train([1,1], [-1,1]);
                 //console.log('\n output', net.outputLayer.outputBuffer, '\n\n');
@@ -298,18 +301,18 @@ describe('Network', function() {
 
         it('can train AND task with momentum option (not a great test)', function(done) {
 
-            var net = new neuralNet.Network();
-            var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
-            var hiddenLayer = new Layers.Layer(Neurons.SigmoidNeuron, 4, Neurons.BiasNeuron, 1);
-            var outputLayer = new Layers.Layer(Neurons.SigmoidNeuron, 1);
+            var net = new Network();
+            var inputLayer = new Layer([{kind: neurons.IdentityNeuron, amount: 2}]);
+            var hiddenLayer = new Layer([{kind: neurons.SigmoidNeuron, amount: 4}, {kind: neurons.BiasNeuron, amount: 1}]);
+            var outputLayer = new Layer([{kind: neurons.SigmoidNeuron, amount: 1}]);
 
-            var ihConnection = new Connections.FullConnection(inputLayer, hiddenLayer);
-            var hoConnection = new Connections.FullConnection(hiddenLayer, outputLayer);
+            var ihConnection = new FullConnection(inputLayer, hiddenLayer);
+            var hoConnection = new FullConnection(hiddenLayer, outputLayer);
 
-            ihConnection.parameters = ihConnection.parameters.map(function(el) {
+            ihConnection.parameters = ihConnection.parameters.map(function(el: number) {
                 return Math.random();
             });
-            hoConnection.parameters = hoConnection.parameters.map(function(el) {
+            hoConnection.parameters = hoConnection.parameters.map(function(el: number) {
                 return Math.random();
             });
 
@@ -319,7 +322,7 @@ describe('Network', function() {
             net.addConnection(hoConnection);
 
             var initialError = 0, finalError = 0;
-            var initialResults = [];
+            var initialResults: Array<Array<number>> = [];
 
             net.resetLayers();
             initialResults.push(net.forwardPropogate([0,0]));
@@ -377,20 +380,20 @@ describe('Network', function() {
         });
 
         it('can train AND task with dropout option (not a great test)', function(done) {
-            var initialError, finalError;
+            var initialError: number, finalError: number;
 
-            var net = new neuralNet.Network();
-            var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
-            var hiddenLayer = new Layers.Layer(Neurons.SigmoidNeuron, 4, Neurons.BiasNeuron, 1);
-            var outputLayer = new Layers.Layer(Neurons.SigmoidNeuron, 1);
+            var net = new Network();
+            var inputLayer = new Layer([{kind: neurons.IdentityNeuron, amount: 2}]);
+            var hiddenLayer = new Layer([{kind: neurons.SigmoidNeuron, amount: 4}, {kind: neurons.BiasNeuron, amount: 1}]);
+            var outputLayer = new Layer([{kind: neurons.SigmoidNeuron, amount: 1}]);
 
-            var ihConnection = new Connections.FullConnection(inputLayer, hiddenLayer);
-            var hoConnection = new Connections.FullConnection(hiddenLayer, outputLayer);
+            var ihConnection = new FullConnection(inputLayer, hiddenLayer);
+            var hoConnection = new FullConnection(hiddenLayer, outputLayer);
 
-            ihConnection.parameters = ihConnection.parameters.map(function(el) {
+            ihConnection.parameters = ihConnection.parameters.map(function(el: number) {
                 return Math.random();
             });
-            hoConnection.parameters = hoConnection.parameters.map(function(el) {
+            hoConnection.parameters = hoConnection.parameters.map(function(el: number) {
                 return Math.random();
             });
 
@@ -399,7 +402,7 @@ describe('Network', function() {
             net.addConnection(ihConnection);
             net.addConnection(hoConnection);
 
-            var initialResults = [];
+            var initialResults: Array<Array<number>> = [];
 
             net.resetLayers();
             initialResults.push(net.forwardPropogate([0,0]));
@@ -462,20 +465,20 @@ describe('Network', function() {
 
         // This test is for fun
         it('can train XOR task with rectified linear neurons for hidden layer', function(done) {
-            var initialError, finalError;
+            var initialError: number, finalError: number;
 
-            var net = new neuralNet.Network();
-            var inputLayer = new Layers.Layer(Neurons.IdentityNeuron, 2);
-            var hiddenLayer = new Layers.Layer(Neurons.RectifiedLinearNeuron, 10, Neurons.BiasNeuron, 1);
-            var outputLayer = new Layers.Layer(Neurons.SigmoidNeuron, 1);
+            var net = new Network();
+            var inputLayer = new Layer([{kind: neurons.IdentityNeuron, amount: 2}]);
+            var hiddenLayer = new Layer([{kind: neurons.RectifiedLinearNeuron, amount: 10}, {kind: neurons.BiasNeuron, amount: 1}]);
+            var outputLayer = new Layer([{kind: neurons.SigmoidNeuron, amount: 1}]);
 
-            var ihConnection = new Connections.FullConnection(inputLayer, hiddenLayer);
-            var hoConnection = new Connections.FullConnection(hiddenLayer, outputLayer);
+            var ihConnection = new FullConnection(inputLayer, hiddenLayer);
+            var hoConnection = new FullConnection(hiddenLayer, outputLayer);
 
-            ihConnection.parameters = ihConnection.parameters.map(function(el) {
+            ihConnection.parameters = ihConnection.parameters.map(function(el: number) {
                 return Math.random();
             });
-            hoConnection.parameters = hoConnection.parameters.map(function(el) {
+            hoConnection.parameters = hoConnection.parameters.map(function(el: number) {
                 return Math.random();
             });
 
