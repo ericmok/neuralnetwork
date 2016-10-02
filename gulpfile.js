@@ -8,7 +8,8 @@ var fs = require('fs'),
     header = require('gulp-header'),
     concat = require('gulp-concat'),
     uglify = require('gulp-uglify'),
-    ts = require('gulp-typescript');
+    ts = require('gulp-typescript'),
+    sourcemaps = require('gulp-sourcemaps');
 
 console.log(fs.readFileSync('./LICENSE', 'utf8'));
 
@@ -46,21 +47,25 @@ gulp.task('build', function() {
     console.log('Performing incremental build...');
 
     var tsResult = tsProject.src().pipe(cache('build'))
+        .pipe(sourcemaps.init())
         .pipe(debug({title: 'files'}))
-        .pipe(tsProject()).pipe(gulp.dest('./build'));
+        .pipe(tsProject())
+        .pipe(sourcemaps.write('maps/'))
+        .pipe(gulp.dest('./build'));
 });
 
 gulp.task('test', function() {
-    //var spawnSync = require("child_process").spawnSync;
+    var spawnSync = require("child_process").spawnSync;
     //spawnSync('npm', ['run', 'mocha', 'build/test/**/*.spec.js', '--colors'], { stdio: "inherit" });
-    exec('npm run mocha "build/test/**/*.spec.js"', (err, stdout, stderr) => {
-        if (err) {
-            console.error(err);
-            return;
-        }
-            console.log(stdout);
-        }
-    );
+    spawnSync('npm', ['test', '--colors'], { stdio: "inherit" });
+    // exec('npm test', (err, stdout, stderr) => {
+    //     if (err) {
+    //         console.error(err);
+    //         return;
+    //     }
+    //         console.log(stdout);
+    //     }
+    // );
 });
 
 gulp.task('watch', function() {

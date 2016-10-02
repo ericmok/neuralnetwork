@@ -21,6 +21,7 @@
     "tsc": "tsc",
     "typings": "typings",
     "gulp": "gulp",
+    "test": "mocha --require source-map-support/register 'build/test/**/*.spec.js'",
     "watch": "gulp watch"
   },
   "devDependencies": {
@@ -32,6 +33,7 @@
     "gulp-debug": "^2.1.2",
     "gulp-header": "^1.1.1",
     "gulp-rename": "^1.2.0",
+    "gulp-sourcemaps": "^1.6.0",
     "gulp-typescript": "^3.0.1",
     "gulp-uglify": "^1.0.1",
     "mocha": "^3.1.0",
