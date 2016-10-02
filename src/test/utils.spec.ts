@@ -7,7 +7,7 @@ var assert = chai.assert,
     should = chai.should(),
     expect = chai.expect;
 
-import * as utils from '../lib/utils.ts';
+import * as utils from '../lib/utils';
 
 describe('Test', function() {
     it('works', function(done) {

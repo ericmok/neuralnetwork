@@ -7,7 +7,7 @@ var assert = chai.assert,
     should = chai.should(),
     expect = chai.expect;
 
-import * as neuralNet from '../lib/index.ts';
+import * as neuralNet from '../lib/index';
 
 import * as neurons from '../lib/neurons';
 import {Layer} from '../lib/layers';
