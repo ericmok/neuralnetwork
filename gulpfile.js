@@ -52,8 +52,8 @@ gulp.task('build', function() {
 
 gulp.task('test', function() {
     //var spawnSync = require("child_process").spawnSync;
-    //spawnSync('npm', ['run', 'mocha', 'build/test/neurons.spec.js', '--colors'], { stdio: "inherit" });
-    exec('npm run mocha "build/test/neurons.spec.js"', (err, stdout, stderr) => {
+    //spawnSync('npm', ['run', 'mocha', 'build/test/**/*.spec.js', '--colors'], { stdio: "inherit" });
+    exec('npm run mocha "build/test/**/*.spec.js"', (err, stdout, stderr) => {
         if (err) {
             console.error(err);
             return;
