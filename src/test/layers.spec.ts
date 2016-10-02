@@ -100,23 +100,18 @@ describe('Layers', function() {
         });
 
         it('each layer has a different name', function(done) {
-            //
-            // var lookup = {}, test, i;
-            //
-            // for (i = 0; i < 3; i++) {
-            //     test = new Layer({
-            //         forward: function(abc: number) { return 12; },
-            //         backward: function(out: number) { return 12; }
-            //     }, 5, Neurons.BiasNeuron, 2);
-            //
-            //
-            //     expect(test.name.length).to.be.above(2);
-            //     expect(lookup[test.name]).to.be.undefined;
-            //     lookup[test.name] = 1;
-            // }
-            //
-            // done();
-            expect(false).to.equal(true);
+
+            var lookup: {[name: string]: number } = {};
+            var test: Layer;
+
+            for (let i = 0; i < 3; i++) {
+                test = new Layer([{kind: TestNeuron, amount: 5}, {kind: neurons.BiasNeuron, amount: 2}]);
+
+                expect(test.name.length).to.be.above(2);
+                expect(lookup[test.name]).to.be.undefined;
+                lookup[test.name] = 1;
+            }
+
             done();
         });
 
