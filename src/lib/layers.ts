@@ -49,9 +49,7 @@ export class Layer {
 
         this.neurons = [];
 
-        if (args.length > 1) {
-            this.createMixNeurons(args);
-        }
+        this.createMixNeurons(args);
 
         this.inputBuffer = [];
         this.outputBuffer = [];
@@ -63,7 +61,9 @@ export class Layer {
 
     createMixNeurons(args : Array<LayerDefinition>) {
         for (let i = 0; i < args.length; i++) {
-            this.neurons.push(new args[i].kind());
+            for (let a = 0; a < args[i].amount; a++) {
+                this.neurons.push(new args[i].kind());
+            }
         }
 
         //var neuronType : N | null = null;
