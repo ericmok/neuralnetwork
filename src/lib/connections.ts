@@ -1,7 +1,7 @@
 /*globals module, require*/
 
-import {dotProduct, vectorSum, matrixVectorMultiplication, transpose, zero, outerProduct} from './utils.ts';
-import {Layer} from './layers.ts';
+import {dotProduct, vectorSum, matrixVectorMultiplication, transpose, zero, outerProduct} from './utils';
+import {Layer} from './layers';
 
 export interface Connection {
     parameters: Array<number>;

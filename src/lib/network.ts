@@ -1,7 +1,7 @@
 /*global module, require*/
 
-import {Layer} from './layers.ts';
-import {Connection} from './connections.ts';
+import {Layer} from './layers';
+import {Connection} from './connections';
 
 export function meanSquaredError(errors: Array<number>): number {
     var mean = errors.reduce((prev: number, curr: number, index: number) => {
