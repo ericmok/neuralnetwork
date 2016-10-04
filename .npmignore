@@ -3,3 +3,4 @@ architecture.svg
 recurrentArchitecture.png
 recurrentArchitecture.svg
 typings/
+!build/
