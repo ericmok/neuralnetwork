@@ -6,5 +6,4 @@ tsconfig.json
 typings
 gulpfile.js
 node_modules/
-src/
 build/maps/
