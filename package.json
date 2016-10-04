@@ -1,8 +1,17 @@
 {
   "name": "neuralnetwork",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Rudimentary Neural Network in Typescript",
   "main": "build/lib/index.js",
+  "files": [
+     "LICENSE",
+     "README.md",
+     "*.js",
+     "*.json",
+     "src/**/*.ts",
+     "build/**/*.js",
+     ".gitignore",
+   ],
   "typings": "src/lib/index",
   "repository": {
     "type": "git",
