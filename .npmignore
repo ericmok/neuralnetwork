@@ -2,8 +2,4 @@ architecture.png
 architecture.svg
 recurrentArchitecture.png
 recurrentArchitecture.svg
-tsconfig.json
-typings
-gulpfile.js
-node_modules/
-build/maps/
+typings/
