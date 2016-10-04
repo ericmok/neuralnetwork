@@ -1,6 +1,6 @@
 {
   "name": "neuralnetwork",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Rudimentary Neural Network in Typescript",
   "main": "build/lib/index.js",
   "typings": "src/lib/index",
