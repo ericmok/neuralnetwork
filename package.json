@@ -10,7 +10,7 @@
      "*.json",
      "src/**/*.ts",
      "build/**/*.js",
-     ".gitignore",
+     ".gitignore"
    ],
   "typings": "src/lib/index",
   "repository": {
