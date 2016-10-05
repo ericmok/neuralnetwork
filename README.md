@@ -4,7 +4,7 @@ Neural Network
 
 A Typescript implementation of rudimentary feed forward neural networks with inspirations taken from PyBrain.
 
-![Architecture](https://github.com/EricMok/neuralnetwork0/blob/master/architecture.png)
+![Architecture](https://github.com/EricMok/neuralnetwork/blob/master/architecture.png)
 
 
 ## Scripts
@@ -187,7 +187,7 @@ network.addConnection(ExampleConnection);
 Currently neurons and layers are stateless.
 To simulate RNN's you will have to consider expanding the network like so:
 
-![Architecture](https://github.com/EricMok/neuralnetwork0/blob/master/recurrentArchitecture.png)
+![Architecture](https://github.com/EricMok/neuralnetwork/blob/master/recurrentArchitecture.png)
 
 
 ```javascript
